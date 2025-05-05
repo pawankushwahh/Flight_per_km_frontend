@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ | Flight Cost Intelligence System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/faq.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html"><i class="fas fa-plane"></i> Flight Cost Intelligence</a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="compare.html" class="nav-link">Compare</a>
+                <a href="predictor.html" class="nav-link">Predictor</a>
+                <a href="optimizer.html" class="nav-link">Optimizer</a>
+                <a href="heatmap.html" class="nav-link">Heatmap</a>
+                <a href="faq.html" class="nav-link active">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Title -->
+    <section class="page-title bg-primary">
+        <div class="container">
+            <h1 class="text-white">Frequently Asked Questions</h1>
+            <p class="text-white">Learn more about our Flight Cost Intelligence System and methodology</p>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section p-5">
+        <div class="container">
+            <!-- Search Bar -->
+            <div class="search-container mb-4">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="faq-search" class="search-input" placeholder="Search for questions...">
+                    <button id="search-clear" class="search-clear" style="display: none;"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="search-results-count" class="search-results-count"></div>
+            </div>
+
+            <!-- FAQ Tabs -->
+            <div class="faq-tabs mb-4">
+                <button class="tab-btn active" data-category="all">All</button>
+                <button class="tab-btn" data-category="general">General</button>
+                <button class="tab-btn" data-category="methodology">Methodology</button>
+                <button class="tab-btn" data-category="features">Features</button>
+                <button class="tab-btn" data-category="technical">Technical</button>
+            </div>
+
+            <div class="faq-container">
+                <div class="accordion">
+                    <!-- General Questions -->
+                    <h2 class="section-title" id="general-section">General Questions</h2>
+                    
+                    <div class="accordion-item" data-category="general">
+                        <div class="accordion-header">
+                            <h3>What is the Flight Cost Intelligence System?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>The Flight Cost Intelligence System is a comprehensive tool that helps travelers make smarter flight decisions by analyzing the cost per kilometer of flights. By breaking down flight costs to a per-kilometer basis, we provide a standardized way to compare flight values across different routes, airlines, and travel classes.</p>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                            <div class="related-questions">
+                                <h4>Related Questions</h4>
+                                <ul>
+                                    <li><a href="#" class="related-question-link" data-target="Why is cost per kilometer a better metric than total price?">Why is cost per kilometer a better metric than total price?</a></li>
+                                    <li><a href="#" class="related-question-link" data-target="How accurate is the data in this system?">How accurate is the data in this system?</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="general">
+                        <div class="accordion-header">
+                            <h3>Why is cost per kilometer a better metric than total price?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>Total price alone doesn't tell you if you're getting good value for your money. A $500 flight might seem expensive, but if it's covering 5,000 kilometers, that's only $0.10 per kilometer, which is quite reasonable. Conversely, a $200 flight covering just 500 kilometers costs $0.40 per kilometer, which is relatively expensive.</p>
+                            <p>Cost per kilometer allows you to standardize flight prices across different distances, making it easier to compare value and spot good deals regardless of the route length.</p>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                            <div class="related-questions">
+                                <h4>Related Questions</h4>
+                                <ul>
+                                    <li><a href="#" class="related-question-link" data-target="What is the Flight Cost Intelligence System?">What is the Flight Cost Intelligence System?</a></li>
+                                    <li><a href="#" class="related-question-link" data-target="How do you calculate the distance between airports?">How do you calculate the distance between airports?</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="general">
+                        <div class="accordion-header">
+                            <h3>How accurate is the data in this system?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>Our system uses actual flight data collected from various sources and APIs. We regularly update our database with the latest flight prices and routes to ensure the information is current and reliable. The analysis techniques and algorithms we use have been carefully designed to provide accurate insights into flight costs per kilometer.</p>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                            <div class="related-questions">
+                                <h4>Related Questions</h4>
+                                <ul>
+                                    <li><a href="#" class="related-question-link" data-target="How can I integrate this with real flight data?">How can I integrate this with real flight data?</a></li>
+                                    <li><a href="#" class="related-question-link" data-target="What technologies are used to build this system?">What technologies are used to build this system?</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Methodology Questions -->
+                    <h2 class="section-title mt-5" id="methodology-section">Methodology</h2>
+                    
+                    <div class="accordion-item" data-category="methodology">
+                        <div class="accordion-header">
+                            <h3>How do you calculate the distance between airports?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>We use the Haversine formula to calculate the great-circle distance between airports based on their latitude and longitude coordinates. This gives us the shortest distance between two points on a sphere (Earth), which is a good approximation of the actual flight distance.</p>
+                            <p>It's worth noting that actual flight paths may be longer due to air traffic control routing, weather conditions, and other factors. However, the great-circle distance provides a consistent basis for comparison.</p>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="methodology">
+                        <div class="accordion-header">
+                            <h3>How do you determine if a nearby airport is worth considering?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>We analyze the average cost per kilometer difference between flights from the primary airport and flights from nearby alternatives. If a nearby airport offers at least a 5% reduction in cost per kilometer, we consider it worth recommending.</p>
+                            <p>We also factor in the distance to the alternative airport. An airport that's 150km away might offer cheaper flights, but the ground transportation costs and time could negate those savings. Our system aims to provide a holistic view of these trade-offs.</p>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="methodology">
+                        <div class="accordion-header">
+                            <h3>How do you calculate the value rating for travel classes?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>Our value rating for travel classes is based on the relationship between the price increase and the space/amenities increase when upgrading from economy class. For example, if business class costs 3 times more than economy but offers only 2 times more space and amenities, it would receive a lower value rating.</p>
+                            <p>We use a 5-star rating system where 5 stars indicates exceptional value (the benefits outweigh the cost increase) and 1 star indicates poor value (the cost increase significantly outweighs the benefits).</p>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Features Questions -->
+                    <h2 class="section-title mt-5" id="features-section">Features</h2>
+                    
+                    <div class="accordion-item" data-category="features">
+                        <div class="accordion-header">
+                            <h3>What is the Dynamic Pricing Predictor?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>The Dynamic Pricing Predictor analyzes historical pricing trends for specific routes to identify patterns in how flight costs per kilometer change throughout the year and as the departure date approaches.</p>
+                            <p>It helps you determine the best time to book your flight (e.g., 30-60 days before departure) and the best time of year to travel (e.g., November) to get the lowest cost per kilometer.</p>
+                            <div class="interactive-demo">
+                                <div class="demo-preview">
+                                    <img src="assets/images/predictor-preview.jpg" alt="Predictor Preview" class="preview-image">
+                                    <button class="demo-btn"><i class="fas fa-play-circle"></i> See how it works</button>
+                                </div>
+                            </div>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="features">
+                        <div class="accordion-header">
+                            <h3>How does the Layover Value Analyzer work?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>The Layover Value Analyzer compares direct flights with flights that include layovers to determine if the cost savings justify the additional travel time. It calculates the cost per kilometer for both options and shows you how much money you could save by accepting a layover, as well as the time trade-off.</p>
+                            <p>This helps you make an informed decision based on your priorities: if saving money is more important than saving time, a layover might be worth it; if time is more valuable to you, a direct flight might be the better choice despite the higher cost.</p>
+                            <div class="interactive-element">
+                                <div class="slider-container">
+                                    <p><strong>How much is your time worth?</strong></p>
+                                    <p>Slide to set your time value preference:</p>
+                                    <input type="range" min="1" max="100" value="50" class="slider" id="time-value-slider">
+                                    <div class="slider-labels">
+                                        <span>Save Money</span>
+                                        <span>Save Time</span>
+                                    </div>
+                                    <p id="recommendation-text">Based on your preference, we would recommend considering flights with short layovers.</p>
+                                </div>
+                            </div>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="features">
+                        <div class="accordion-header">
+                            <h3>What does the Global Cost-per-Km Heat Map show?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>The Global Cost-per-Km Heat Map visualizes average flight costs per kilometer across different regions and countries around the world. It helps you identify which parts of the world have relatively expensive or inexpensive air travel.</p>
+                            <p>This can be particularly useful for planning multi-destination trips or for understanding global aviation pricing trends. For example, you might discover that flights within Southeast Asia are generally much cheaper per kilometer than flights within Europe.</p>
+                            <div class="interactive-element">
+                                <div class="heatmap-preview">
+                                    <div class="mini-map" id="mini-heatmap">
+                                        <!-- Mini interactive heatmap will be rendered here by JavaScript -->
+                                        <div class="map-placeholder">Interactive preview loading...</div>
+                                    </div>
+                                    <a href="heatmap.html" class="btn btn-primary">Explore Full Heatmap</a>
+                                </div>
+                            </div>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Technical Questions -->
+                    <h2 class="section-title mt-5" id="technical-section">Technical</h2>
+                    
+                    <div class="accordion-item" data-category="technical">
+                        <div class="accordion-header">
+                            <h3>What technologies are used to build this system?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>The Flight Cost Intelligence System is built using:</p>
+                            <ul>
+                                <li><strong>Frontend:</strong> HTML, CSS, and vanilla JavaScript (no frameworks)</li>
+                                <li><strong>Backend:</strong> Python with Flask</li>
+                                <li><strong>Data Storage:</strong> SQL database for storing flight data and user preferences</li>
+                                <li><strong>Visualization:</strong> Chart.js for graphs and Leaflet for maps</li>
+                                <li><strong>APIs:</strong> Integration with real flight data providers</li>
+                            </ul>
+                            <p>This technology stack was chosen for its simplicity, performance, and ease of deployment.</p>
+                            <div class="tech-stack-visual">
+                                <div class="tech-icon">
+                                    <i class="fab fa-html5"></i>
+                                    <span>HTML5</span>
+                                </div>
+                                <div class="tech-icon">
+                                    <i class="fab fa-css3-alt"></i>
+                                    <span>CSS3</span>
+                                </div>
+                                <div class="tech-icon">
+                                    <i class="fab fa-js"></i>
+                                    <span>JavaScript</span>
+                                </div>
+                                <div class="tech-icon">
+                                    <i class="fab fa-python"></i>
+                                    <span>Python</span>
+                                </div>
+                                <div class="tech-icon">
+                                    <i class="fas fa-database"></i>
+                                    <span>SQL</span>
+                                </div>
+                            </div>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="technical">
+                        <div class="accordion-header">
+                            <h3>Is this system open source?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>Currently, this is a project developed for educational purposes. We're considering releasing certain components of the system as open source in the future to allow for community contributions and improvements.</p>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="technical">
+                        <div class="accordion-header">
+                            <h3>How do you collect and process the flight data?</h3>
+                            <span class="accordion-icon"><i class="fas fa-plus"></i></span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>We collect flight data from various sources including airline websites, flight aggregators, and public APIs. This data is then processed through our algorithms to calculate the cost per kilometer metrics and other valuable insights.</p>
+                            <p>Our system regularly updates the flight information to ensure you have access to the most current pricing data. We also maintain historical records to identify trends and patterns that help with price predictions.</p>
+                            <div class="interactive-element">
+                                <div class="data-flow-diagram">
+                                    <img src="assets/images/data-flow.png" alt="Data Flow Diagram" class="diagram-image">
+                                    <div class="diagram-caption">Flight data collection and processing flow</div>
+                                </div>
+                            </div>
+                            <div class="feedback-container">
+                                <p class="feedback-question">Was this helpful?</p>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" data-value="yes"><i class="fas fa-thumbs-up"></i> Yes</button>
+                                    <button class="feedback-btn" data-value="no"><i class="fas fa-thumbs-down"></i> No</button>
+                                </div>
+                                <div class="feedback-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feedback Section -->
+    <section class="contact-section bg-light p-5">
+        <div class="container">
+            <h2 class="section-title">Help Us Improve</h2>
+            <p class="text-center mb-4">We value your feedback to make our platform better</p>
+            
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <form id="feedback-form">
+                                <div class="mb-3">
+                                    <label for="feedback-type" class="form-label">Feedback Type</label>
+                                    <select class="form-select" id="feedback-type" required>
+                                        <option value="" selected disabled>Select feedback type</option>
+                                        <option value="suggestion">Suggestion</option>
+                                        <option value="feature">Feature Request</option>
+                                        <option value="bug">Bug Report</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="feedback-message" class="form-label">Your Feedback</label>
+                                    <textarea class="form-control" id="feedback-message" rows="4" placeholder="Please share your thoughts..." required></textarea>
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary px-4">Submit Feedback</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Flight Cost Intelligence</h3>
+                    <p>Making air travel more transparent and cost-effective through per-kilometer analysis.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="compare.html">Compare</a></li>
+                        <li><a href="predictor.html">Predictor</a></li>
+                        <li><a href="optimizer.html">Optimizer</a></li>
+                        <li><a href="heatmap.html">Heatmap</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>About Us</h3>
+                    <p>Flight Cost Intelligence is a cutting-edge platform designed to help travelers make informed decisions through data-driven insights.</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Flight Cost Intelligence System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/faq.js"></script>
+</body>
+</html>

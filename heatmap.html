@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Cost Heatmap | Flight Cost Intelligence System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dropdown.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="icon" href="https://img.icons8.com/fluency/48/airplane-mode-on.png" type="image/png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html"><i class="fas fa-plane"></i> Flight Cost Intelligence</a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="compare.html" class="nav-link">Compare</a>
+                <a href="predictor.html" class="nav-link">Predictor</a>
+                <a href="optimizer.html" class="nav-link">Optimizer</a>
+                <a href="heatmap.html" class="nav-link active">Heatmap</a>
+                <a href="faq.html" class="nav-link">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Title -->
+    <section class="page-title bg-primary">
+        <div class="container">
+            <h1 class="text-white">Global Cost-per-Km Heat Map</h1>
+            <p class="text-white">Visualize flight costs across different regions to identify travel bargains worldwide</p>
+        </div>
+    </section>
+
+    <!-- Heatmap Section -->
+    <section class="heatmap-section p-5">
+        <div class="container">
+            <div class="heatmap-container">
+                <div class="search-tabs mb-4">
+                    <div class="search-tab active has-dropdown">Region View
+                        <ul class="dropdown-content">
+                            <li><i class="fas fa-globe-asia"></i> North India</li>
+                            <li><i class="fas fa-globe-asia"></i> South India</li>
+                            <li><i class="fas fa-globe-asia"></i> East India</li>
+                            <li><i class="fas fa-globe-asia"></i> West India</li>
+                            <li><i class="fas fa-globe-asia"></i> Central India</li>
+                        </ul>
+                    </div>
+                    <div class="search-tab has-dropdown">Route Analysis
+                        <ul class="dropdown-content">
+                            <li><i class="fas fa-plane"></i> Metro to Metro</li>
+                            <li><i class="fas fa-plane"></i> Metro to Tier 2</li>
+                            <li><i class="fas fa-plane"></i> Tier 2 to Tier 2</li>
+                            <li><i class="fas fa-plane"></i> Tourist Routes</li>
+                            <li><i class="fas fa-plane"></i> Business Routes</li>
+                        </ul>
+                    </div>
+                    <div class="search-tab has-dropdown">Price Heatmap
+                        <ul class="dropdown-content">
+                            <li><i class="fas fa-fire"></i> Absolute Price</li>
+                            <li><i class="fas fa-fire"></i> Cost per Kilometer</li>
+                            <li><i class="fas fa-fire"></i> Price Volatility</li>
+                            <li><i class="fas fa-fire"></i> Seasonal Variation</li>
+                            <li><i class="fas fa-fire"></i> Price Trends</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="map-controls mb-4">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="view-type" class="form-label">View By:</label>
+                                <select id="view-type" class="form-select">
+                                    <option value="region">Region</option>
+                                    <option value="country">Country</option>
+                                    <option value="route">Popular Routes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="origin-airport" class="form-label">Origin Airport:</label>
+                                <select id="origin-airport" class="form-select">
+                                    <option value="">Select origin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="destination-airport" class="form-label">Destination Airport:</label>
+                                <select id="destination-airport" class="form-select">
+                                    <option value="">Select destination</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="map-container" class="map-container">
+                    <!-- Map will be rendered here -->
+                </div>
+                
+                <div id="heatmap-legend" class="heatmap-legend mt-3">
+                    <h3>Legend</h3>
+                    <div class="legend-items">
+                        <!-- Legend will be populated here -->
+                    </div>
+                </div>
+                
+                <div id="heatmap-stats" class="heatmap-stats mt-4">
+                    <!-- Stats will be populated here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Insights Section -->
+    <section class="insights-section bg-light p-5">
+        <div class="container">
+            <h2 class="section-title">Global Flight Cost Insights</h2>
+            
+            <div class="insights-grid">
+                <div class="insight-item card">
+                    <div class="card-body">
+                        <h3>Cheapest Regions</h3>
+                        <div id="cheapest-regions">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insight-item card">
+                    <div class="card-body">
+                        <h3>Most Expensive Regions</h3>
+                        <div id="expensive-regions">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insight-item card">
+                    <div class="card-body">
+                        <h3>Best Value Routes</h3>
+                        <div id="best-value-routes">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Flight Cost Intelligence</h3>
+                    <p>Making air travel more transparent and cost-effective through per-kilometer analysis.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="compare.html">Compare</a></li>
+                        <li><a href="predictor.html">Predictor</a></li>
+                        <li><a href="optimizer.html">Optimizer</a></li>
+                        <li><a href="heatmap.html">Heatmap</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>About Us</h3>
+                    <p>Flight Cost Intelligence is a cutting-edge platform designed to help travelers make informed decisions through data-driven insights.</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Flight Cost Intelligence System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/heatmap.js"></script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Cost Visualizations | Flight Cost Intelligence System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/skyscanner-style.css">
+    <link rel="icon" href="https://img.icons8.com/fluency/48/airplane-mode-on.png" type="image/png">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .visualization-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+        }
+        
+        .visualization-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .visualization-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2b2d42;
+            margin: 0;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 1rem 0;
+        }
+        
+        .filter-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-label {
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+        
+        .filter-select {
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+        }
+        
+        .insight-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4361ee;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2b2d42;
+        }
+        
+        .insight-text {
+            color: #6c757d;
+            margin: 0;
+        }
+        
+        .tab-container {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            border-bottom-color: #4361ee;
+            color: #4361ee;
+            font-weight: 500;
+        }
+        
+        .tab:hover:not(.active) {
+            border-bottom-color: #ddd;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .city-card {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .city-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .city-icon {
+            font-size: 2rem;
+            color: #4361ee;
+            margin-right: 1rem;
+        }
+        
+        .city-details {
+            flex: 1;
+        }
+        
+        .city-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .city-stats {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .city-cost {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #2b2d42;
+        }
+        
+        .back-to-compare {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4361ee;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        .back-to-compare:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html"><i class="fas fa-plane"></i> Flight Cost Intelligence</a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="compare.html" class="nav-link active">Compare</a>
+                <a href="predictor.html" class="nav-link">Predictor</a>
+                <a href="optimizer.html" class="nav-link">Optimizer</a>
+                <a href="heatmap.html" class="nav-link">Heatmap</a>
+                <a href="faq.html" class="nav-link">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Title -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Flight Cost Visualizations</h1>
+                <p>Explore insightful visualizations of flight costs per kilometer across different routes</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visualizations Section -->
+    <section class="visualizations-section">
+        <div class="container">
+            <a href="compare.html" class="back-to-compare">
+                <i class="fas fa-arrow-left"></i> Back to Compare
+            </a>
+            
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <div class="tab active" data-tab="routes">Route Comparisons</div>
+                <div class="tab" data-tab="cities">City Analysis</div>
+                <div class="tab" data-tab="insights">Cost Insights</div>
+            </div>
+            
+            <!-- Routes Tab Content -->
+            <div class="tab-content active" id="routes-tab">
+                <!-- Top Routes Visualization -->
+                <div class="visualization-card">
+                    <div class="visualization-header">
+                        <h2 class="visualization-title">Top Routes by Cost Per Kilometer</h2>
+                        <div class="filter-controls">
+                            <span class="filter-label">Show:</span>
+                            <select id="routes-limit" class="filter-select">
+                                <option value="3">Top 3</option>
+                                <option value="5">Top 5</option>
+                                <option value="10" selected>Top 10</option>
+                                <option value="15">Top 15</option>
+                                <option value="20">Top 20</option>
+                            </select>
+                            <span class="filter-label">Sort by:</span>
+                            <select id="routes-sort" class="filter-select">
+                                <option value="cheapest">Cheapest First</option>
+                                <option value="expensive">Most Expensive First</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="routesChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h3 class="insight-title">Key Insight</h3>
+                        <p class="insight-text" id="routes-insight">Loading insights...</p>
+                    </div>
+                </div>
+                
+                <!-- Cost Distribution Visualization -->
+                <div class="visualization-card">
+                    <div class="visualization-header">
+                        <h2 class="visualization-title">Cost Per Kilometer Distribution</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h3 class="insight-title">Key Insight</h3>
+                        <p class="insight-text" id="distribution-insight">Loading insights...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cities Tab Content -->
+            <div class="tab-content" id="cities-tab">
+                <!-- Cities Comparison Visualization -->
+                <div class="visualization-card">
+                    <div class="visualization-header">
+                        <h2 class="visualization-title">Cities by Average Cost Per Kilometer</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="citiesChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h3 class="insight-title">Key Insight</h3>
+                        <p class="insight-text" id="cities-insight">Loading insights...</p>
+                    </div>
+                </div>
+                
+                <!-- Best Value Cities -->
+                <div class="visualization-card">
+                    <div class="visualization-header">
+                        <h2 class="visualization-title">Best Value Cities</h2>
+                    </div>
+                    <div id="best-cities-container">
+                        <!-- City cards will be added here dynamically -->
+                        <div class="loading-container">
+                            <div class="spinner"></div>
+                            <p>Loading city data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Insights Tab Content -->
+            <div class="tab-content" id="insights-tab">
+                <!-- Cost vs Distance Visualization -->
+                <div class="visualization-card">
+                    <div class="visualization-header">
+                        <h2 class="visualization-title">Cost vs Distance Analysis</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="scatterChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h3 class="insight-title">Key Insight</h3>
+                        <p class="insight-text" id="scatter-insight">Loading insights...</p>
+                    </div>
+                </div>
+                
+                <!-- Price Efficiency Index -->
+                <div class="visualization-card">
+                    <div class="visualization-header">
+                        <h2 class="visualization-title">Price Efficiency Index</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="efficiencyChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h3 class="insight-title">Key Insight</h3>
+                        <p class="insight-text" id="efficiency-insight">Loading insights...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Flight Cost Intelligence</h3>
+                    <p>Making air travel more transparent and cost-effective through per-kilometer analysis.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="compare.html">Compare</a></li>
+                        <li><a href="predictor.html">Predictor</a></li>
+                        <li><a href="optimizer.html">Optimizer</a></li>
+                        <li><a href="heatmap.html">Heatmap</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>About Us</h3>
+                    <p>Flight Cost Intelligence is a cutting-edge platform designed to help travelers make informed decisions through data-driven insights.</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Flight Cost Intelligence System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/visualizations.js"></script>
+</body>
+</html>

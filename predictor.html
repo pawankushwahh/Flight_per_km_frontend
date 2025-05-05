@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Predictor | Flight Cost Intelligence System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/skyscanner-style.css">
+    <link rel="stylesheet" href="assets/css/dropdown.css">
+    <link rel="icon" href="https://img.icons8.com/fluency/48/airplane-mode-on.png" type="image/png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html"><i class="fas fa-plane"></i> Flight Cost Intelligence</a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="compare.html" class="nav-link">Compare</a>
+                <a href="predictor.html" class="nav-link active">Predictor</a>
+                <a href="optimizer.html" class="nav-link">Optimizer</a>
+                <a href="heatmap.html" class="nav-link">Heatmap</a>
+                <a href="faq.html" class="nav-link">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Title -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Dynamic Pricing Predictor</h1>
+                <p>Analyze historical trends to find the best time to book your flights at the lowest cost per km</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Predictor Section -->
+    <section class="predictor-section">
+        <div class="container">
+            <!-- Search Box (Skyscanner style) -->
+            <div class="search-box">
+                <div class="search-tabs">
+                    <div class="search-tab active has-dropdown">Price Prediction
+                        <ul class="dropdown-content">
+                            <li><i class="fas fa-calendar-alt"></i> Monthly Price Forecast</li>
+                            <li><i class="fas fa-clock"></i> Booking Time Recommendations</li>
+                            <li><i class="fas fa-percentage"></i> Price Fluctuation Analysis</li>
+                            <li><i class="fas fa-dollar-sign"></i> Lowest Price Alerts</li>
+                            <li><i class="fas fa-tags"></i> Best Value Months</li>
+                        </ul>
+                    </div>
+                    <div class="search-tab has-dropdown">Historical Analysis
+                        <ul class="dropdown-content">
+                            <li><i class="fas fa-chart-line"></i> Price Trend Patterns</li>
+                            <li><i class="fas fa-history"></i> Year-Over-Year Comparison</li>
+                            <li><i class="fas fa-calendar-week"></i> Seasonal Variations</li>
+                            <li><i class="fas fa-chart-bar"></i> Price Distribution</li>
+                            <li><i class="fas fa-chart-area"></i> Long-Term Price Evolution</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="search-form">
+                    <div class="search-input-group">
+                        <label class="search-input-label">From</label>
+                        <select id="origin" class="search-input" required>
+                            <option value="">Select origin</option>
+                        </select>
+                    </div>
+                    
+                    <div class="search-input-group">
+                        <label class="search-input-label">To</label>
+                        <select id="destination" class="search-input" required>
+                            <option value="">Select destination</option>
+                        </select>
+                    </div>
+
+                    <button id="predict-btn" class="search-button">
+                        <i class="fas fa-chart-line"></i> Predict Prices
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Container -->
+            <div id="results-container" style="display: none;" class="mt-4">
+                <h2><i class="fas fa-chart-line text-primary"></i> Price Prediction Results</h2>
+                
+                <div id="prediction-loading" class="text-center p-5">
+                    <div class="spinner"></div>
+                    <p class="mt-3">Analyzing price trends...</p>
+                </div>
+                
+                <div id="prediction-results" style="display: none;">
+                    <!-- This will be populated dynamically -->
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h3>Price Trend Analysis</h3>
+                        <div class="chart-container">
+                            <canvas id="prediction-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="prediction-results" class="mt-4">
+                        <!-- Prediction results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-plane"></i> Flight Cost Intelligence
+                    </div>
+                    <p>Making air travel more transparent and cost-effective through per-kilometer analysis.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Tools</h3>
+                    <ul class="footer-links">
+                        <li><a href="compare.html">Route Comparison</a></li>
+                        <li><a href="predictor.html">Price Prediction</a></li>
+                        <li><a href="optimizer.html">Route Optimization</a></li>
+                        <li><a href="heatmap.html">Cost Heatmap</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Flight Cost Intelligence is a cutting-edge platform designed to help travelers make informed decisions through data-driven insights.</p>
+                    <p><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Flight Cost Intelligence System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/airport-utility.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Populate airport dropdowns
+            populateAirportDropdowns();
+            
+            // Handle predict button click
+            document.getElementById('predict-btn').addEventListener('click', function() {
+                const origin = document.getElementById('origin').value;
+                const destination = document.getElementById('destination').value;
+                
+                if (origin && destination) {
+                    predictPrices(origin, destination);
+                }
+            });
+            
+            // Handle search tabs
+            const searchTabs = document.querySelectorAll('.search-tab');
+            searchTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    searchTabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                });
+            });
+        });
+        
+        // Initialize airport dropdowns when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const originSelect = document.getElementById('origin');
+            const destinationSelect = document.getElementById('destination');
+            populateAirportDropdowns(originSelect, destinationSelect);
+        });
+        
+        // Function to predict prices
+        function predictPrices(origin, destination) {
+            const resultsContainer = document.getElementById('results-container');
+            const loadingElement = document.getElementById('prediction-loading');
+            const predictionResults = document.getElementById('prediction-results');
+            
+            resultsContainer.style.display = 'block';
+            loadingElement.style.display = 'block';
+            predictionResults.style.display = 'none';
+            
+            // Make API request using the callAPI function from CONFIG
+            callAPI(CONFIG.ENDPOINTS.PREDICT, {
+                origin: origin,
+                destination: destination
+            })
+            .then(data => {
+                if (data.success && data.data) {
+                    const predictionData = data.data;
+                    
+                    // Create prediction results HTML
+                    let resultsHTML = `
+                        <div class="prediction-card">
+                            <div class="prediction-header">
+                                <h3>${getAirportName(origin)} to ${getAirportName(destination)}</h3>
+                                <div class="prediction-confidence ${predictionData.price_confidence.toLowerCase()}">
+                                    ${predictionData.price_confidence} confidence
+                                </div>
+                            </div>
+                            
+                            <div class="prediction-body">
+                                <div class="prediction-price-container">
+                                    <div class="prediction-price-item">
+                                        <div class="prediction-label">Current Price</div>
+                                        <div class="prediction-price">₹${predictionData.current_price}</div>
+                                    </div>
+                                    
+                                    <div class="prediction-price-item highlight">
+                                        <div class="prediction-label">Lowest Predicted</div>
+                                        <div class="prediction-price">₹${predictionData.lowest_price}</div>
+                                        <div class="prediction-savings">
+                                            Save up to ₹${predictionData.current_price - predictionData.lowest_price}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="prediction-price-item">
+                                        <div class="prediction-label">Highest Predicted</div>
+                                        <div class="prediction-price">₹${predictionData.highest_price}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="prediction-advice">
+                                    <div class="advice-icon">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="advice-content">
+                                        <div class="advice-label">Best Time to Book</div>
+                                        <div class="advice-text">${predictionData.best_time_to_book}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    predictionResults.innerHTML = resultsHTML;
+                    predictionResults.style.display = 'block';
+                    loadingElement.style.display = 'none';
+                    
+                    // Create chart
+                    createPredictionChart(predictionData.monthly_prices);
+                } else {
+                    predictionResults.innerHTML = '<div class="alert alert-warning">No prediction data available for this route.</div>';
+                    predictionResults.style.display = 'block';
+                    loadingElement.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error predicting prices:', error);
+                predictionResults.innerHTML = `<div class="alert alert-danger">Error predicting prices: ${error.message}</div>`;
+                predictionResults.style.display = 'block';
+                loadingElement.style.display = 'none';
+            });
+        }
+        
+        // We're now using the getAirportName function from airport-utility.js
+        
+        // Function to create prediction chart
+        function createPredictionChart(monthlyPrices) {
+            const ctx = document.getElementById('prediction-chart').getContext('2d');
+            
+            const months = monthlyPrices.map(item => item.month);
+            const prices = monthlyPrices.map(item => item.price);
+            
+            // Find the lowest price index to highlight it
+            const lowestPriceIndex = prices.indexOf(Math.min(...prices));
+            const pointBackgroundColors = Array(prices.length).fill(CONFIG.CHART_COLORS.primary);
+            pointBackgroundColors[lowestPriceIndex] = CONFIG.CHART_COLORS.success;
+            
+            const pointRadius = Array(prices.length).fill(4);
+            pointRadius[lowestPriceIndex] = 6;
+            
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Predicted Price (₹)',
+                        data: prices,
+                        backgroundColor: 'rgba(7, 112, 227, 0.2)',
+                        borderColor: CONFIG.CHART_COLORS.primary,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointBackgroundColor: pointBackgroundColors,
+                        pointRadius: pointRadius,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Price: ₹${context.raw}`;
+                                },
+                                footer: function(tooltipItems) {
+                                    const dataIndex = tooltipItems[0].dataIndex;
+                                    if (dataIndex === lowestPriceIndex) {
+                                        return 'Best time to book!';
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Price (₹)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

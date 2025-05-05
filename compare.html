@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Flight Costs | Flight Cost Intelligence System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/skyscanner-style.css">
+    <link rel="stylesheet" href="assets/css/dropdown.css">
+    <link rel="icon" href="https://img.icons8.com/fluency/48/airplane-mode-on.png" type="image/png">
+    <!-- Leaflet Map CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html"><i class="fas fa-plane"></i> Flight Cost Intelligence</a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="compare.html" class="nav-link active">Compare</a>
+                <a href="predictor.html" class="nav-link">Predictor</a>
+                <a href="optimizer.html" class="nav-link">Optimizer</a>
+                <a href="heatmap.html" class="nav-link">Heatmap</a>
+                <a href="faq.html" class="nav-link">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Title -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Compare Flight Costs Per Kilometer</h1>
+                <p>Compare the true value of flights by analyzing cost per kilometer across different routes</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compare Section -->
+    <section class="compare-section">
+        <div class="container">
+            <!-- Search Box (Skyscanner style) -->
+            <div class="search-box">
+                <div class="search-tabs">
+                    <div class="search-tab active has-dropdown">Compare Multiple Routes
+                        <ul class="dropdown-content">
+                            <li><i class="fas fa-plane-departure"></i> Direct Flight Comparison</li>
+                            <li><i class="fas fa-calculator"></i> Cost Per Kilometer Analysis</li>
+                            <li><i class="fas fa-balance-scale"></i> Multi-Route Comparison</li>
+                            <li><i class="fas fa-route"></i> Distance Analysis</li>
+                            <li><i class="fas fa-money-bill-wave"></i> Price Breakdown</li>
+                        </ul>
+                    </div>
+                    <div class="search-tab has-dropdown">Single Route Analysis
+                        <ul class="dropdown-content">
+                            <li><i class="fas fa-search-dollar"></i> Price Comparison</li>
+                            <li><i class="fas fa-stopwatch"></i> Duration Analysis</li>
+                            <li><i class="fas fa-plane"></i> Airline Comparison</li>
+                            <li><i class="fas fa-calendar-check"></i> Best Day to Fly</li>
+                            <li><i class="fas fa-chart-pie"></i> Value Assessment</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="routes-container">
+                    <!-- Route 1 -->
+                    <div class="route-item mb-3">
+                        <h3><i class="fas fa-plane-departure text-primary"></i> Route 1</h3>
+                        <div class="search-form">
+                            <div class="search-input-group">
+                                <label class="search-input-label">From</label>
+                                <select id="origin-1" class="search-input" required>
+                                    <option value="">Select origin</option>
+                                </select>
+                            </div>
+                            <div class="search-input-group">
+                                <label class="search-input-label">To</label>
+                                <select id="destination-1" class="search-input" required>
+                                    <option value="">Select destination</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions mt-3">
+                        <button id="add-route-btn" class="btn btn-secondary">
+                            <i class="fas fa-plus"></i> Add Another Route
+                        </button>
+                        <button id="compare-btn" class="search-button">
+                            <i class="fas fa-search"></i> Compare Routes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Container -->
+            <div id="results-container" style="display: none;" class="mt-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2><i class="fas fa-chart-bar text-primary"></i> Comparison Results</h2>
+                    <a href="visualizations.html" class="btn btn-primary">
+                        <i class="fas fa-chart-pie"></i> View Advanced Visualizations
+                    </a>
+                </div>
+                
+                <div id="loading-results" class="text-center p-5">
+                    <div class="spinner"></div>
+                    <p class="mt-3">Analyzing routes...</p>
+                </div>
+                
+                <!-- Comparison Table -->
+                <div id="comparison-table-container" style="display: none;" class="mt-4">
+                    <h3><i class="fas fa-table text-primary"></i> Route Comparison Table</h3>
+                    <div class="table-responsive">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Distance (km)</th>
+                                    <th>Price (₹)</th>
+                                    <th>Cost per km (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparison-table-body">
+                                <!-- Table rows will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Flight Cards -->
+                <div id="comparison-results" style="display: none;" class="mt-4">
+                    <!-- Flight cards will be populated here -->
+                </div>
+
+                <!-- Chart -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h3>Cost Per Kilometer Comparison</h3>
+                        <div class="chart-container" style="height: 300px; position: relative;">
+                            <canvas id="comparison-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h3>Route Map Visualization</h3>
+                        <div id="route-map" style="height: 400px; width: 100%;"></div>
+                    </div>
+                </div>
+
+
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Flight Cost Intelligence</h3>
+                    <p>Making air travel more transparent and cost-effective through per-kilometer analysis.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="compare.html">Compare</a></li>
+                        <li><a href="predictor.html">Predictor</a></li>
+                        <li><a href="optimizer.html">Optimizer</a></li>
+                        <li><a href="heatmap.html">Heatmap</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>About Us</h3>
+                    <p>Flight Cost Intelligence is a cutting-edge platform designed to help travelers make informed decisions through data-driven insights.</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Flight Cost Intelligence System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/airport-utility.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const originParam = urlParams.get('origin');
+            const destinationParam = urlParams.get('destination');
+            
+            // Initialize route counter
+            let routeCounter = 1; // Start with 1 route in the page
+            
+            // Populate airport dropdowns
+            populateAirportDropdowns();
+            
+            // If URL has origin and destination parameters, set them and trigger comparison
+            if (originParam && destinationParam) {
+                // Set the values for the first route
+                const origin1 = document.getElementById('origin-1');
+                const destination1 = document.getElementById('destination-1');
+                
+                if (origin1 && destination1) {
+                    origin1.value = originParam;
+                    destination1.value = destinationParam;
+                    
+                    // Trigger comparison after a short delay to ensure dropdowns are populated
+                    setTimeout(() => {
+                        document.getElementById('compare-btn').click();
+                    }, 500);
+                }
+            }
+            
+            // Handle add route button
+            document.getElementById('add-route-btn').addEventListener('click', function() {
+                routeCounter++;
+                addNewRoute(routeCounter);
+            });
+            
+            // Handle compare button
+            document.getElementById('compare-btn').addEventListener('click', function() {
+                compareRoutes();
+            });
+            
+            // Handle search tabs
+            const searchTabs = document.querySelectorAll('.search-tab');
+            searchTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    searchTabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                });
+            });
+        });
+        
+        // Function to populate airport dropdowns
+        function populateAirportDropdowns() {
+            // Get all origin and destination dropdowns
+            const originSelects = document.querySelectorAll('[id^="origin-"]');
+            const destinationSelects = document.querySelectorAll('[id^="destination-"]');
+            
+            // Show loading state
+            originSelects.forEach(select => {
+                select.innerHTML = '<option value="">Loading airports...</option>';
+            });
+            destinationSelects.forEach(select => {
+                select.innerHTML = '<option value="">Loading airports...</option>';
+            });
+            
+            // Fetch airports from API
+            fetch(`${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.AIRPORTS}`)
+                .then(response => response.json())
+                .then(response => {
+                    if (response.success && Array.isArray(response.data)) {
+                        // Sort airports by city name for better usability
+                        const airports = response.data.sort((a, b) => {
+                            return a.city.localeCompare(b.city);
+                        });
+                        
+                        // Create airport optgroup
+                        const indiaGroup = document.createElement('optgroup');
+                        indiaGroup.label = 'India';
+                        
+                        // Add airport options to group
+                        airports.forEach(airport => {
+                            const option = document.createElement('option');
+                            option.value = airport.code;
+                            option.textContent = `${airport.city} - ${airport.name} (${airport.code})`;
+                            indiaGroup.appendChild(option.cloneNode(true));
+                        });
+                        
+                        // Populate origin dropdowns
+                        originSelects.forEach(select => {
+                            // Clear existing options
+                            select.innerHTML = '<option value="">Select origin</option>';
+                            // Add the airport group
+                            select.appendChild(indiaGroup.cloneNode(true));
+                        });
+                        
+                        // Populate destination dropdowns
+                        destinationSelects.forEach(select => {
+                            // Clear existing options
+                            select.innerHTML = '<option value="">Select destination</option>';
+                            // Add the airport group
+                            select.appendChild(indiaGroup.cloneNode(true));
+                        });
+                    } else {
+                        fallbackToConfigAirports(originSelects, destinationSelects);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading airports:', error);
+                    fallbackToConfigAirports(originSelects, destinationSelects);
+                });    
+        }
+        
+        // Fallback function to use CONFIG.POPULAR_AIRPORTS if API fails
+        function fallbackToConfigAirports(originSelects, destinationSelects) {
+            if (CONFIG.POPULAR_AIRPORTS && CONFIG.POPULAR_AIRPORTS.length > 0) {
+                console.log('Using fallback airport data from CONFIG');
+                
+                // Create India group
+                const indiaGroup = document.createElement('optgroup');
+                indiaGroup.label = 'India';
+                
+                // Add airport options to group
+                CONFIG.POPULAR_AIRPORTS.forEach(airport => {
+                    const option = document.createElement('option');
+                    option.value = airport.code;
+                    option.textContent = `${airport.city} - ${airport.name} (${airport.code})`;
+                    indiaGroup.appendChild(option);
+                });
+                
+                // Populate origin dropdowns
+                originSelects.forEach(select => {
+                    // Clear existing options
+                    select.innerHTML = '<option value="">Select origin</option>';
+                    // Add the airport group
+                    select.appendChild(indiaGroup.cloneNode(true));
+                });
+                
+                // Populate destination dropdowns
+                destinationSelects.forEach(select => {
+                    // Clear existing options
+                    select.innerHTML = '<option value="">Select destination</option>';
+                    // Add the airport group
+                    select.appendChild(indiaGroup.cloneNode(true));
+                });
+            } else {
+                populateStaticAirports(originSelects, destinationSelects);
+            }
+        }
+        
+        // Function to populate dropdowns with static airport data if all else fails
+        function populateStaticAirports(originSelects, destinationSelects) {
+            console.log('Using hard-coded static airport data');
+            // Common Indian airports as absolute fallback
+            const staticAirports = [
+                { code: 'DEL', name: 'Indira Gandhi International Airport', city: 'Delhi' },
+                { code: 'BOM', name: 'Chhatrapati Shivaji International Airport', city: 'Mumbai' },
+                { code: 'BLR', name: 'Kempegowda International Airport', city: 'Bangalore' },
+                { code: 'HYD', name: 'Rajiv Gandhi International Airport', city: 'Hyderabad' },
+                { code: 'MAA', name: 'Chennai International Airport', city: 'Chennai' },
+                { code: 'CCU', name: 'Netaji Subhash Chandra Bose International Airport', city: 'Kolkata' },
+                { code: 'COK', name: 'Cochin International Airport', city: 'Kochi' },
+                { code: 'PNQ', name: 'Pune Airport', city: 'Pune' },
+                { code: 'AMD', name: 'Sardar Vallabhbhai Patel International Airport', city: 'Ahmedabad' },
+                { code: 'JAI', name: 'Jaipur International Airport', city: 'Jaipur' }
+            ];
+            
+            // Create India group
+            const indiaGroup = document.createElement('optgroup');
+            indiaGroup.label = 'India';
+            
+            // Add airport options to group
+            staticAirports.forEach(airport => {
+                const option = document.createElement('option');
+                option.value = airport.code;
+                option.textContent = `${airport.city} - ${airport.name} (${airport.code})`;
+                indiaGroup.appendChild(option);
+            });
+            
+            // Populate origin dropdowns
+            originSelects.forEach(select => {
+                // Clear existing options
+                select.innerHTML = '<option value="">Select origin</option>';
+                // Add the airport group
+                select.appendChild(indiaGroup.cloneNode(true));
+            });
+            
+            // Populate destination dropdowns
+            destinationSelects.forEach(select => {
+                // Clear existing options
+                select.innerHTML = '<option value="">Select destination</option>';
+                // Add the airport group
+                select.appendChild(indiaGroup.cloneNode(true));
+            });
+        }
+        
+        // This function is no longer needed since we have a complete implementation above
+        // It's kept for backward compatibility with any existing code that might call it
+        function populateStaticAirports(originSelect, destinationSelect) {
+            console.log('Using legacy single-select populateStaticAirports function');
+            
+            // Create a temporary array of selects to reuse the main implementation
+            const originSelects = [originSelect];
+            const destinationSelects = [destinationSelect];
+            
+            // Call the more robust implementation above
+            fallbackToConfigAirports(originSelects, destinationSelects);
+        }
+        
+        // Function to add a new route
+        function addNewRoute(routeNumber) {
+            const routesContainer = document.getElementById('routes-container');
+            
+            // Create new route element
+            const routeItem = document.createElement('div');
+            routeItem.className = 'route-item mb-3';
+            routeItem.innerHTML = `
+                <h3><i class="fas fa-plane-departure text-primary"></i> Route ${routeNumber}</h3>
+                <div class="search-form">
+                    <div class="search-input-group">
+                        <label class="search-input-label">From</label>
+                        <select id="origin-${routeNumber}" class="search-input" required>
+                            <option value="">Select origin</option>
+                        </select>
+                    </div>
+                    <div class="search-input-group">
+                        <label class="search-input-label">To</label>
+                        <select id="destination-${routeNumber}" class="search-input" required>
+                            <option value="">Select destination</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-danger remove-route" data-route="${routeNumber}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Insert before the form actions
+            const formActions = document.querySelector('.form-actions');
+            routesContainer.insertBefore(routeItem, formActions);
+            
+            // Populate the new dropdowns
+            const originSelect = document.getElementById(`origin-${routeNumber}`);
+            const destinationSelect = document.getElementById(`destination-${routeNumber}`);
+            
+            // Set loading state
+            if (originSelect && destinationSelect) {
+                originSelect.innerHTML = '<option value="">Loading airports...</option>';
+                destinationSelect.innerHTML = '<option value="">Loading airports...</option>';
+                
+                // Fetch airports from API
+                callAPI(CONFIG.ENDPOINTS.AIRPORTS)
+                    .then(response => {
+                        if (response.success) {
+                            const airports = response.data;
+                            
+                            // Clear loading state
+                            originSelect.innerHTML = '<option value="">Select origin</option>';
+                            destinationSelect.innerHTML = '<option value="">Select destination</option>';
+                            
+                            // Add airport options
+                            airports.forEach(airport => {
+                                // Add to origin dropdown
+                                const originOption = document.createElement('option');
+                                originOption.value = airport.code;
+                                originOption.textContent = `${airport.city} - ${airport.name} (${airport.code})`;
+                                originSelect.appendChild(originOption);
+                                
+                                // Add to destination dropdown
+                                const destOption = document.createElement('option');
+                                destOption.value = airport.code;
+                                destOption.textContent = `${airport.city} - ${airport.name} (${airport.code})`;
+                                destinationSelect.appendChild(destOption);
+                            });
+                        } else {
+                            console.error('Failed to fetch airports for new route:', response.error);
+                            // Fallback to static data
+                            populateStaticAirports(originSelect, destinationSelect);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching airports for new route:', error);
+                        // Fallback to static data
+                        populateStaticAirports(originSelect, destinationSelect);
+                    });
+            }
+            
+            // Add event listener to remove button
+            const removeButton = routeItem.querySelector('.remove-route');
+            removeButton.addEventListener('click', function() {
+                routeItem.remove();
+            });
+        }
+        
+        // Function to compare routes
+        function compareRoutes() {
+            // Show loading state
+            const resultsContainer = document.getElementById('results-container');
+            const loadingElement = document.getElementById('loading-results');
+            const comparisonResults = document.getElementById('comparison-results');
+            const comparisonTableContainer = document.getElementById('comparison-table-container');
+            
+            resultsContainer.style.display = 'block';
+            loadingElement.style.display = 'block';
+            comparisonResults.style.display = 'none';
+            comparisonTableContainer.style.display = 'none';
+            
+            // Collect route data
+            const routes = [];
+            const routeItems = document.querySelectorAll('.route-item');
+            
+            routeItems.forEach((item, index) => {
+                const routeNumber = index + 1;
+                const origin = document.getElementById(`origin-${routeNumber}`).value;
+                const destination = document.getElementById(`destination-${routeNumber}`).value;
+                
+                if (origin && destination) {
+                    routes.push({
+                        origin: origin,
+                        destination: destination
+                    });
+                }
+            });
+            
+            // Check if we have at least one valid route
+            if (routes.length === 0) {
+                comparisonResults.innerHTML = '<div class="alert alert-warning">Please select at least one valid route to compare.</div>';
+                comparisonResults.style.display = 'block';
+                loadingElement.style.display = 'none';
+                return;
+            }
+            
+            // Make API request using the callAPI function from CONFIG
+            callAPI(CONFIG.ENDPOINTS.COMPARE, { routes: routes })
+            .then(data => {
+                if (data.success && data.data && data.data.length > 0) {
+                    // Sort routes by cost per km (lowest first)
+                    const sortedRoutes = [...data.data].sort((a, b) => a.cost_per_km - b.cost_per_km);
+                    
+                    // 1. Populate comparison table
+                    const tableBody = document.getElementById('comparison-table-body');
+                    let tableHTML = '';
+                    
+                    sortedRoutes.forEach((route, index) => {
+                        // Add a class to highlight the best value route
+                        const rowClass = index === 0 ? 'best-value-row' : '';
+                        
+                        tableHTML += `
+                            <tr class="${rowClass}">
+                                <td>${getAirportName(route.origin)} (${route.origin})</td>
+                                <td>${getAirportName(route.destination)} (${route.destination})</td>
+                                <td>${route.distance.toFixed(2)} km</td>
+                                <td>₹${route.price.toLocaleString()}</td>
+                                <td>₹${route.cost_per_km.toFixed(4)}/km ${index === 0 ? '<span class="best-value-badge">Best Value</span>' : ''}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableBody.innerHTML = tableHTML;
+                    comparisonTableContainer.style.display = 'block';
+                    
+                    // 2. Create flight cards
+                    let resultsHTML = '';
+                    
+                    sortedRoutes.forEach((route, index) => {
+                        const bestValueClass = index === 0 ? 'best-value-card' : '';
+                        
+                        resultsHTML += `
+                            <div class="flight-card ${bestValueClass}">
+                                <div class="flight-card-details">
+                                    <div class="flight-card-route">
+                                        <div class="flight-card-origin">
+                                            <div class="flight-card-airport">${getAirportName(route.origin)}</div>
+                                            <div class="flight-card-code">${route.origin}</div>
+                                        </div>
+                                        <div class="flight-card-duration">
+                                            <div class="flight-card-arrow"><i class="fas fa-plane"></i></div>
+                                            <div class="flight-card-distance">${route.distance.toFixed(2)} km</div>
+                                        </div>
+                                        <div class="flight-card-destination">
+                                            <div class="flight-card-airport">${getAirportName(route.destination)}</div>
+                                            <div class="flight-card-code">${route.destination}</div>
+                                        </div>
+                                    </div>
+                                    <div class="flight-card-price">
+                                        <div class="flight-card-price-amount">₹${route.price.toLocaleString()}</div>
+                                        <div class="flight-card-price-per-km">₹${route.cost_per_km.toFixed(4)}/km</div>
+                                        ${index === 0 ? '<div class="best-value-tag">Best Value</div>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    // Update results container
+                    comparisonResults.innerHTML = resultsHTML;
+                    comparisonResults.style.display = 'block';
+                    loadingElement.style.display = 'none';
+                    
+                    // Create chart
+                    createComparisonChart(sortedRoutes);
+                    
+                    // Create map visualization
+                    createRouteMap(sortedRoutes);
+                } else {
+                    comparisonResults.innerHTML = '<div class="alert alert-warning">No routes found matching your criteria.</div>';
+                    comparisonResults.style.display = 'block';
+                    loadingElement.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error comparing routes:', error);
+                comparisonResults.innerHTML = `<div class="alert alert-danger">Error comparing routes: ${error.message}</div>`;
+                comparisonResults.style.display = 'block';
+                loadingElement.style.display = 'none';
+            });
+        }
+        
+        // Helper function to get airport name from code
+        function getAirportName(code) {
+            if (typeof CONFIG !== 'undefined' && CONFIG.POPULAR_AIRPORTS) {
+                const airport = CONFIG.POPULAR_AIRPORTS.find(a => a.code === code);
+                return airport ? airport.name.split(' ')[0] : code;
+            }
+            return code;
+        }
+        
+        // Variable to store the chart instance
+        let comparisonChart = null;
+        
+        // Function to create comparison chart focusing on cost per kilometer
+        function createComparisonChart(routesData) {
+            const canvas = document.getElementById('comparison-chart');
+            const ctx = canvas.getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.comparisonChart) {
+                window.comparisonChart.destroy();
+            }
+            
+            // Extract data for chart
+            const labels = routesData.map(route => `${route.origin} to ${route.destination}`);
+            const costPerKmData = routesData.map(route => route.cost_per_km);
+            const distanceData = routesData.map(route => route.distance / 1000); // Convert to thousands for better scaling
+            
+            // Generate unique colors for each route
+            const colorPalette = [
+                'rgba(75, 192, 192, 0.7)',  // Teal
+                'rgba(255, 99, 132, 0.7)',   // Pink
+                'rgba(54, 162, 235, 0.7)',   // Blue
+                'rgba(255, 206, 86, 0.7)',   // Yellow
+                'rgba(153, 102, 255, 0.7)',  // Purple
+                'rgba(255, 159, 64, 0.7)',   // Orange
+                'rgba(199, 199, 199, 0.7)',  // Grey
+                'rgba(83, 102, 255, 0.7)',   // Indigo
+                'rgba(255, 99, 71, 0.7)',    // Tomato
+                'rgba(46, 204, 113, 0.7)'    // Green
+            ];
+            
+            // Create colors array for each route
+            const backgroundColors = routesData.map((_, index) => colorPalette[index % colorPalette.length]);
+            const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
+            
+            // Create chart focused on cost per kilometer comparison with both bar and line
+            window.comparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Cost per Kilometer (₹)',
+                            data: costPerKmData,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 1,
+                            order: 1
+                        },
+                        {
+                            label: 'Distance (thousands km)',
+                            data: distanceData,
+                            type: 'line',
+                            fill: false,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 3,
+                            pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                            pointBorderColor: '#fff',
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.1,
+                            yAxisID: 'y1',
+                            order: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Cost per Kilometer and Distance Comparison',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const datasetLabel = context.dataset.label || '';
+                                    if (context.datasetIndex === 0) {
+                                        return datasetLabel + ': ₹' + context.parsed.y.toFixed(4) + '/km';
+                                    } else {
+                                        return datasetLabel + ': ' + (context.parsed.y * 1000).toFixed(2) + ' km';
+                                    }
+                                },
+                                afterLabel: function(context) {
+                                    if (context.datasetIndex === 0) {
+                                        const index = context.dataIndex;
+                                        const route = routesData[index];
+                                        return [
+                                            `Distance: ${route.distance.toFixed(2)} km`,
+                                            `Total Price: ₹${route.price.toLocaleString()}`
+                                        ];
+                                    }
+                                    return null;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Flight Routes'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cost per Kilometer (₹)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toFixed(2);
+                                }
+                            }
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Distance (thousands km)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(1) + 'k';
+                                }
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 25,
+                            top: 20,
+                            bottom: 10
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Variable to store the map instance
+        let routeMap = null;
+        
+        // Function to create route map visualization
+        function createRouteMap(routesData) {
+            // Get the map container
+            const mapContainer = document.getElementById('route-map');
+            
+            // If a map already exists, remove it completely
+            if (window.routeMap) {
+                window.routeMap.remove();
+            }
+            
+            // Create map centered on India
+            window.routeMap = L.map('route-map').setView([22.5937, 78.9629], 5);
+            
+            // Add tile layer (map background)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(window.routeMap);
+            
+            // Since we don't have coordinates, we'll create a simplified visualization
+            // by placing airports in a circle and drawing routes between them
+            
+            // First, collect all unique airports
+            const airports = new Set();
+            routesData.forEach(route => {
+                airports.add(route.origin);
+                airports.add(route.destination);
+            });
+            
+            // Convert to array and create a circle of coordinates
+            const airportList = Array.from(airports);
+            const airportCoords = {};
+            
+            // Create a circle of coordinates around the center of India
+            const centerLat = 22.5937;
+            const centerLon = 78.9629;
+            const radius = 3; // degrees
+            
+            airportList.forEach((airport, index) => {
+                const angle = (index / airportList.length) * 2 * Math.PI;
+                const lat = centerLat + radius * Math.cos(angle);
+                const lon = centerLon + radius * Math.sin(angle);
+                airportCoords[airport] = [lat, lon];
+            });
+            
+            // Create markers for each airport
+            const markers = {};
+            Object.entries(airportCoords).forEach(([airport, coords]) => {
+                markers[airport] = L.marker(coords)
+                    .addTo(window.routeMap)
+                    .bindPopup(`<b>${getAirportName(airport)}</b><br>${airport}`);
+            });
+            
+            // Draw routes between airports
+            routesData.forEach((route, index) => {
+                const originCoords = airportCoords[route.origin];
+                const destCoords = airportCoords[route.destination];
+                
+                if (originCoords && destCoords) {
+                    // Draw line between origin and destination
+                    const routeLine = L.polyline([
+                        originCoords,
+                        destCoords
+                    ], {
+                        color: index === 0 ? CONFIG.CHART_COLORS.accent : CONFIG.CHART_COLORS.primary,
+                        weight: index === 0 ? 4 : 2,
+                        opacity: 0.8,
+                        dashArray: index === 0 ? null : '5, 5'
+                    }).addTo(window.routeMap);
+                    
+                    // Add popup with route information
+                    routeLine.bindPopup(
+                        `<b>${route.origin} to ${route.destination}</b><br>
+                        Distance: ${route.distance.toFixed(2)} km<br>
+                        Price: ₹${route.price.toLocaleString()}<br>
+                        Cost per km: ₹${route.cost_per_km.toFixed(4)}/km
+                        ${index === 0 ? '<br><b>Best Value Route!</b>' : ''}`
+                    );
+                }
+            });
+            
+            // Force a resize to ensure the map renders correctly
+            setTimeout(() => {
+                window.routeMap.invalidateSize();
+            }, 100);
+        }
+
+    </script>
+</body>
+</html>

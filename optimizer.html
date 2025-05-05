@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Optimizer | Flight Cost Intelligence System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dropdown.css">
+    <link rel="icon" href="https://img.icons8.com/fluency/48/airplane-mode-on.png" type="image/png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html"><i class="fas fa-plane"></i> Flight Cost Intelligence</a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="compare.html" class="nav-link">Compare</a>
+                <a href="predictor.html" class="nav-link">Predictor</a>
+                <a href="optimizer.html" class="nav-link active">Optimizer</a>
+                <a href="heatmap.html" class="nav-link">Heatmap</a>
+                <a href="faq.html" class="nav-link">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Title -->
+    <section class="page-title bg-primary">
+        <div class="container">
+            <h1 class="text-white">Route Optimizer</h1>
+            <p class="text-white">Find nearby airports, analyze layover options, and compare travel classes for maximum value</p>
+        </div>
+    </section>
+
+    <!-- Optimizer Section -->
+    <section class="optimizer-section p-5">
+        <div class="container">
+            <div class="optimizer-container">
+                <!-- Route Selection Form -->
+                <div class="route-form">
+                    <h2>Select Route to Optimize</h2>
+                    <p>Choose an origin and destination to explore optimization options</p>
+                    
+                    <div class="search-tabs">
+                        <div class="search-tab active has-dropdown">Optimize Routes
+                            <ul class="dropdown-content">
+                                <li><i class="fas fa-map-marker-alt"></i> Nearby Airport Options</li>
+                                <li><i class="fas fa-exchange-alt"></i> Alternative Routes</li>
+                                <li><i class="fas fa-plane"></i> Layover Value Analysis</li>
+                                <li><i class="fas fa-couch"></i> Class Efficiency Comparison</li>
+                                <li><i class="fas fa-wallet"></i> Budget Optimization</li>
+                            </ul>
+                        </div>
+                        <div class="search-tab has-dropdown">Route Alternatives
+                            <ul class="dropdown-content">
+                                <li><i class="fas fa-road"></i> Multi-City Options</li>
+                                <li><i class="fas fa-clock"></i> Time vs Cost Analysis</li>
+                                <li><i class="fas fa-building"></i> Airport Comparison</li>
+                                <li><i class="fas fa-car"></i> Ground Transport Integration</li>
+                                <li><i class="fas fa-thumbs-up"></i> Recommended Combinations</li>
+                            </ul>
+                        </div>
+                        <div class="search-tab has-dropdown">Layover Analysis
+                            <ul class="dropdown-content">
+                                <li><i class="fas fa-stopwatch"></i> Duration Optimization</li>
+                                <li><i class="fas fa-city"></i> Interesting Layover Cities</li>
+                                <li><i class="fas fa-money-bill-wave"></i> Cost Reduction Options</li>
+                                <li><i class="fas fa-bed"></i> Overnight Layover Analysis</li>
+                                <li><i class="fas fa-suitcase-rolling"></i> Baggage Policy Comparison</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="route-inputs">
+                        <div class="form-group">
+                            <label for="origin" class="form-label">Origin</label>
+                            <select id="origin" class="form-select" required>
+                                <option value="">Select Airport</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="destination" class="form-label">Destination</label>
+                            <select id="destination" class="form-select" required>
+                                <option value="">Select Airport</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions mt-3">
+                        <button id="optimize-btn" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Find Optimization Options
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Container -->
+                <div id="results-container" class="results-container" style="display: none;">
+                    <div class="tabs mt-4">
+                        <ul class="tab-nav">
+                            <li class="tab-item active" data-tab="nearby">Nearby Airports</li>
+                            <li class="tab-item" data-tab="layover">Layover Options</li>
+                            <li class="tab-item" data-tab="class">Travel Classes</li>
+                        </ul>
+                        
+                        <div class="tab-content">
+                            <!-- Nearby Airports Tab -->
+                            <div id="nearby" class="tab-pane active">
+                                <h2>Nearby Airport Alternatives</h2>
+                                <p>Consider these nearby airports for potential savings</p>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h3>Origin Alternatives</h3>
+                                        <div id="origin-alternatives">
+                                            <!-- Origin alternatives will be populated here -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <h3>Destination Alternatives</h3>
+                                        <div id="destination-alternatives">
+                                            <!-- Destination alternatives will be populated here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Layover Options Tab -->
+                            <div id="layover" class="tab-pane">
+                                <h2>Layover Value Analysis</h2>
+                                <p>Compare direct flights with layover options</p>
+                                
+                                <div id="layover-comparison">
+                                    <!-- Layover comparison will be populated here -->
+                                </div>
+                                
+                                <div class="chart-container mt-4">
+                                    <canvas id="layover-chart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <!-- Travel Classes Tab -->
+                            <div id="class" class="tab-pane">
+                                <h2>Travel Class Comparison</h2>
+                                <p>Compare the cost-per-kilometer value across different travel classes</p>
+                                
+                                <div id="class-comparison">
+                                    <!-- Class comparison will be populated here -->
+                                </div>
+                                
+                                <div class="chart-container mt-4">
+                                    <canvas id="class-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Flight Cost Intelligence</h3>
+                    <p>Making air travel more transparent and cost-effective through per-kilometer analysis.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="compare.html">Compare</a></li>
+                        <li><a href="predictor.html">Predictor</a></li>
+                        <li><a href="optimizer.html">Optimizer</a></li>
+                        <li><a href="heatmap.html">Heatmap</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>About Us</h3>
+                    <p>Flight Cost Intelligence is a cutting-edge platform designed to help travelers make informed decisions through data-driven insights.</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Flight Cost Intelligence System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/optimizer.js"></script>
+</body>
+</html>
