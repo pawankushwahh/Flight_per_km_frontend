@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Routes Finder | Flight Cost Intelligence System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dropdown.css">
+    <link rel="icon" href="https://img.icons8.com/fluency/48/airplane-mode-on.png" type="image/png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html"><i class="fas fa-plane"></i> Flight Cost Intelligence</a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="compare.html" class="nav-link">Compare</a>
+                <a href="predictor.html" class="nav-link">Predictor</a>
+                <a href="optimizer.html" class="nav-link">Optimizer</a>
+                <a href="route-finder.html" class="nav-link active">Route Finder</a>
+                <a href="heatmap.html" class="nav-link">Heatmap</a>
+                <a href="faq.html" class="nav-link">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Title -->
+    <section class="page-title bg-primary">
+        <div class="container">
+            <h1 class="text-white">Route Finder</h1>
+            <p class="text-white">Find the best routes with lowest cost per kilometer and optimal travel months</p>
+        </div>
+    </section>
+
+    <!-- Route Finder Section -->
+    <section class="route-finder-section p-5">
+        <div class="container">
+            <div class="route-finder-container">
+                <!-- Origin Selection Form -->
+                <div class="origin-form">
+                    <h2>Select Origin Airport</h2>
+                    <p>Choose an origin airport to see the best routes and optimal travel times</p>
+                    
+                    <div class="form-group mt-4">
+                        <label for="origin" class="form-label">Origin Airport</label>
+                        <select id="origin" class="form-select" required>
+                            <option value="">Select Airport</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions mt-3">
+                        <button id="find-routes-btn" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Find Best Routes
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Container -->
+                <div id="results-container" class="results-container mt-5" style="display: none;">
+                    <h2 id="results-title">Best Routes from <span id="selected-origin"></span></h2>
+                    <p class="text-muted">Routes sorted by cost per kilometer (lowest first)</p>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h3><i class="fas fa-route"></i> Best Value Routes</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-primary">
+                                        <tr>
+                                            <th>Destination</th>
+                                            <th>Distance (km)</th>
+                                            <th>Price</th>
+                                            <th>Cost per km</th>
+                                            <th>Best Month to Travel</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="routes-table-body">
+                                        <!-- Routes will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trend container removed as requested -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Flight Cost Intelligence</h3>
+                    <p>Making air travel more transparent and cost-effective through per-kilometer analysis.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="compare.html">Compare</a></li>
+                        <li><a href="predictor.html">Predictor</a></li>
+                        <li><a href="optimizer.html">Optimizer</a></li>
+                        <li><a href="route-finder.html">Route Finder</a></li>
+                        <li><a href="heatmap.html">Heatmap</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>About Us</h3>
+                    <p>Flight Cost Intelligence is a cutting-edge platform designed to help travelers make informed decisions through data-driven insights.</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Flight Cost Intelligence System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/route-finder.js"></script>
+</body>
+</html>

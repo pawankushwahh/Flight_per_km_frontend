@@ -4,8 +4,8 @@
  */
 
 const CONFIG = {
-    // API base URL - change this when deploying to production
-    API_BASE_URL: 'http://127.0.0.1:5000',
+    // API base URL - using Render deployed backend
+    API_BASE_URL: 'https://flight-cost-intelligence-api.onrender.com',
     
     // API endpoints with their HTTP methods
     ENDPOINTS: {

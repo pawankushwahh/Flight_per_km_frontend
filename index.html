@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="assets/css/skyscanner-style.css">
     <link rel="stylesheet" href="assets/css/how-it-works.css">
     <link rel="stylesheet" href="assets/css/dropdown.css">
+    <link rel="stylesheet" href="assets/css/feature-buttons.css">
     <link rel="icon" href="https://img.icons8.com/fluency/48/airplane-mode-on.png" type="image/png">
 </head>
 <body>
@@ -21,6 +22,7 @@
             <nav class="nav">
                 <a href="index.html" class="nav-link active">Home</a>
                 <a href="compare.html" class="nav-link">Compare</a>
+                <a href="route-finder.html" class="nav-link">Route Finder</a>
                 <a href="predictor.html" class="nav-link">Predictor</a>
                 <a href="optimizer.html" class="nav-link">Optimizer</a>
                 <a href="heatmap.html" class="nav-link">Heatmap</a>
@@ -38,55 +40,42 @@
                 
                 <!-- Skyscanner-style search box -->
                 <div class="search-box animate-fadeIn">
-                    <div class="search-tabs">
-                        <div class="search-tab active has-dropdown">Compare Routes
-                            <ul class="dropdown-content">
-                                <li><i class="fas fa-plane-departure"></i> Direct Flight Comparison</li>
-                                <li><i class="fas fa-calculator"></i> Cost Per Kilometer Analysis</li>
-                                <li><i class="fas fa-balance-scale"></i> Multi-Route Comparison</li>
-                                <li><i class="fas fa-route"></i> Distance Analysis</li>
-                                <li><i class="fas fa-money-bill-wave"></i> Price Breakdown</li>
-                            </ul>
+                    <h3 class="text-center mb-4">Flight Cost Intelligence Tools</h3>
+                    
+                    <div class="feature-buttons-container">
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <a href="compare.html" class="feature-button btn-primary">
+                                    <i class="fas fa-plane-departure fa-2x mb-2"></i>
+                                    <h4>Compare Routes</h4>
+                                    <p>Compare flight costs per kilometer across different routes</p>
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <a href="predictor.html" class="feature-button btn-success">
+                                    <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                    <h4>Price Trends</h4>
+                                    <p>Analyze price trends and get the best time to book</p>
+                                </a>
+                            </div>
                         </div>
-                        <div class="search-tab has-dropdown">Price Trends
-                            <ul class="dropdown-content">
-                                <li><i class="fas fa-calendar-alt"></i> Monthly Price Trends</li>
-                                <li><i class="fas fa-clock"></i> Pre-Booking Timeline Analysis</li>
-                                <li><i class="fas fa-chart-line"></i> Historical Price Data</li>
-                                <li><i class="fas fa-percentage"></i> Discount Predictions</li>
-                                <li><i class="fas fa-tags"></i> Best Time to Book</li>
-                            </ul>
-                        </div>
-                        <div class="search-tab has-dropdown">Optimize Routes
-                            <ul class="dropdown-content">
-                                <li><i class="fas fa-map-marker-alt"></i> Nearby Airport Options</li>
-                                <li><i class="fas fa-exchange-alt"></i> Alternative Routes</li>
-                                <li><i class="fas fa-plane"></i> Layover Value Analysis</li>
-                                <li><i class="fas fa-couch"></i> Class Efficiency Comparison</li>
-                                <li><i class="fas fa-wallet"></i> Budget Optimization</li>
-                            </ul>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <a href="route-finder.html" class="feature-button btn-info">
+                                    <i class="fas fa-globe fa-2x mb-2"></i>
+                                    <h4>Route Finder</h4>
+                                    <p>Find best value destinations with lowest cost per kilometer</p>
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <a href="optimizer.html" class="feature-button btn-warning">
+                                    <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
+                                    <h4>Optimize Routes</h4>
+                                    <p>Discover nearby airport alternatives and save on flights</p>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    
-                    <form id="search-form" class="search-form">
-                        <div class="search-input-group">
-                            <label class="search-input-label">From</label>
-                            <select id="origin" class="search-input" required>
-                                <option value="">Select origin</option>
-                            </select>
-                        </div>
-                        
-                        <div class="search-input-group">
-                            <label class="search-input-label">To</label>
-                            <select id="destination" class="search-input" required>
-                                <option value="">Select destination</option>
-                            </select>
-                        </div>
-                        
-                        <button type="submit" class="search-button">
-                            <i class="fas fa-search"></i> Compare
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -202,6 +191,12 @@
                 
                 <div id="routes-content" class="popular-routes-grid" style="display: none;">
                     <!-- This will be populated dynamically -->
+                </div>
+                
+                <div id="show-more-container" class="text-center mt-4" style="display: none;">
+                    <button id="show-more-btn" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> Show More Routes
+                    </button>
                 </div>
             </div>
         </div>
@@ -328,10 +323,15 @@
         // Dynamic data loading from backend API
         document.addEventListener('DOMContentLoaded', function() {
             // Populate airport dropdowns
-            populateAirportDropdowns();
+            const originSelect = document.getElementById('origin');
+            const destinationSelect = document.getElementById('destination');
+            populateAirportDropdowns(originSelect, destinationSelect);
             
             // Load popular routes
             loadPopularRoutes();
+            
+            // Track the active tab
+            let activeTab = 'Compare Routes';
             
             // Handle search form submission
             document.getElementById('search-form').addEventListener('submit', function(e) {
@@ -339,42 +339,76 @@
                 const origin = document.getElementById('origin').value;
                 const destination = document.getElementById('destination').value;
                 
-                if (origin && destination) {
-                    // Redirect to compare page with query parameters
-                    window.location.href = `compare.html?origin=${origin}&destination=${destination}`;
+                // Check if we're in Route Finder mode which only needs origin
+                if (activeTab.includes('Route Finder')) {
+                    if (origin) {
+                        window.location.href = `route-finder.html?origin=${origin}`;
+                    } else {
+                        alert('Please select an origin airport');
+                    }
+                } else {
+                    // All other tabs need both origin and destination
+                    if (origin && destination) {
+                        // Redirect based on active tab
+                        if (activeTab.includes('Compare Routes')) {
+                            window.location.href = `compare.html?origin=${origin}&destination=${destination}`;
+                        } else if (activeTab.includes('Price Trends')) {
+                            window.location.href = `predictor.html?origin=${origin}&destination=${destination}`;
+                        } else if (activeTab.includes('Optimize Routes')) {
+                            window.location.href = `optimizer.html?origin=${origin}&destination=${destination}`;
+                        }
+                    } else {
+                        // Alert if fields are not filled
+                        alert('Please select both origin and destination airports');
+                    }
                 }
             });
             
             // Handle search tabs
             const searchTabs = document.querySelectorAll('.search-tab');
+            
+            // Function to update UI based on selected tab
+            function updateTabUI(selectedTab) {
+                // Remove active class from all tabs
+                searchTabs.forEach(t => t.classList.remove('active'));
+                // Add active class to selected tab
+                selectedTab.classList.add('active');
+                
+                // Store the active tab
+                activeTab = selectedTab.textContent.trim();
+                
+                // Update form and button based on selected tab
+                const form = document.getElementById('search-form');
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const destField = document.getElementById('destination-field');
+                
+                // Update button text based on tab
+                if (activeTab.includes('Compare Routes')) {
+                    submitBtn.innerHTML = '<i class="fas fa-search"></i> Compare';
+                    destField.style.display = 'block';
+                } else if (activeTab.includes('Price Trends')) {
+                    submitBtn.innerHTML = '<i class="fas fa-chart-line"></i> View Trends';
+                    destField.style.display = 'block';
+                } else if (activeTab.includes('Optimize Routes')) {
+                    submitBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Optimize';
+                    destField.style.display = 'block';
+                } else if (activeTab.includes('Route Finder')) {
+                    submitBtn.innerHTML = '<i class="fas fa-route"></i> Find Routes';
+                    // Hide destination field for Route Finder as it only needs origin
+                    destField.style.display = 'none';
+                }
+            }
+            
+            // Add click event to each tab
             searchTabs.forEach(tab => {
                 tab.addEventListener('click', function() {
-                    // Remove active class from all tabs
-                    searchTabs.forEach(t => t.classList.remove('active'));
-                    // Add active class to clicked tab
-                    this.classList.add('active');
-                    
-                    // Update form action based on selected tab
-                    const form = document.getElementById('search-form');
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    
-                    if (this.textContent === 'Compare Routes') {
-                        submitBtn.innerHTML = '<i class="fas fa-search"></i> Compare';
-                    } else if (this.textContent === 'Price Trends') {
-                        submitBtn.innerHTML = '<i class="fas fa-chart-line"></i> View Trends';
-                    } else if (this.textContent === 'Optimize Routes') {
-                        submitBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Optimize';
-                    }
+                    updateTabUI(this);
                 });
             });
-        });
-        
-        // Initialize airport dropdowns when document is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            const originSelect = document.getElementById('origin');
-            const destinationSelect = document.getElementById('destination');
-            // Using the shared utility function from airport-utility.js
-            populateAirportDropdowns(originSelect, destinationSelect);
+            
+            // Make sure the correct initial state is set
+            const initialTab = document.querySelector('.search-tab.active') || searchTabs[0];
+            updateTabUI(initialTab);
         });
         
         // Using airport-utility.js instead of local implementation
@@ -383,93 +417,205 @@
         function loadPopularRoutes() {
             const routesContainer = document.getElementById('routes-content');
             const loadingElement = document.getElementById('routes-loading');
+            const showMoreContainer = document.getElementById('show-more-container');
             
-            // Create popular route pairs from major Indian cities
-            const popularRoutePairs = [
-                { origin: 'DEL', destination: 'BOM' },  // Delhi to Mumbai
-                { origin: 'BLR', destination: 'DEL' },  // Bangalore to Delhi
-                { origin: 'MAA', destination: 'BOM' },  // Chennai to Mumbai
-                { origin: 'CCU', destination: 'DEL' },  // Kolkata to Delhi
-                { origin: 'HYD', destination: 'BLR' },  // Hyderabad to Bangalore
-                { origin: 'PNQ', destination: 'DEL' },  // Pune to Delhi
-                { origin: 'COK', destination: 'BLR' },  // Kochi to Bangalore
-                { origin: 'AMD', destination: 'BOM' }   // Ahmedabad to Mumbai
-            ];
-            
-            // Fetch data from API using the endpoint from CONFIG
-            fetch(`${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.COMPARE}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    routes: popularRoutePairs
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && data.data && data.data.length > 0) {
-                    // Create HTML for routes
-                    let routesHTML = '';
-                    
-                    data.data.forEach(route => {
-                        // Calculate a savings percentage based on average cost per km in India
-                        const avgCostPerKm = 4.8; // Average cost per km for Indian domestic flights
-                        const savingsPercent = Math.round((avgCostPerKm - route.cost_per_km) / avgCostPerKm * 100);
-                        const savingsClass = savingsPercent > 0 ? 'savings-positive' : 'savings-negative';
+            // Fetch top routes from API endpoint
+            fetchTopRoutes()
+                .then(allRoutes => {
+                    if (allRoutes && allRoutes.length > 0) {
+                        // Store all routes in a global variable to access later when Show More is clicked
+                        window.allPopularRoutes = allRoutes;
                         
-                        routesHTML += `
-                            <div class="route-card">
-                                <div class="route-card-header">
-                                    <div class="route-airports">
-                                        <span class="route-origin">${route.origin}</span>
-                                        <span class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></span>
-                                        <span class="route-destination">${route.destination}</span>
-                                    </div>
-                                    <div class="route-airline">
-                                        <i class="fas fa-plane"></i> ${route.airline}
-                                    </div>
-                                </div>
-                                <div class="route-card-body">
-                                    <div class="route-details">
-                                        <div class="route-distance">
-                                            <i class="fas fa-route"></i> ${route.distance} km
-                                        </div>
-                                        <div class="route-cost-per-km">
-                                            <i class="fas fa-tag"></i> ₹${route.cost_per_km}/km
-                                        </div>
-                                    </div>
-                                    <div class="route-price">
-                                        <div class="price-amount">₹${route.price}</div>
-                                        <div class="price-savings ${savingsClass}">
-                                            ${savingsPercent > 0 ? `${savingsPercent}% cheaper than average` : `${Math.abs(savingsPercent)}% more expensive than average`}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="route-card-footer">
-                                    <a href="compare.html?origin=${route.origin}&destination=${route.destination}" class="route-compare-btn">
-                                        Compare this route <i class="fas fa-arrow-right"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        `;
+                        // Initially show only first 5 routes
+                        const initialRoutes = allRoutes.slice(0, 5);
+                        renderPopularRoutes(initialRoutes, routesContainer);
+                        
+                        // Show the 'Show More' button if there are more routes to display
+                        if (allRoutes.length > 5) {
+                            showMoreContainer.style.display = 'block';
+                            document.getElementById('show-more-btn').addEventListener('click', showMoreRoutes);
+                        }
+                        
+                        // Hide loading indicator
+                        loadingElement.style.display = 'none';
+                    } else {
+                        // Handle case when no routes are returned
+                        routesContainer.innerHTML = '<div class="alert alert-warning text-center">No routes data available at the moment.</div>';
+                        routesContainer.style.display = 'block';
+                        loadingElement.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading routes:', error);
+                    routesContainer.innerHTML = '<div class="alert alert-danger text-center">Unable to load routes data. Please try again later.</div>';
+                    routesContainer.style.display = 'block';
+                    loadingElement.style.display = 'none';
+                });
+        }
+        
+        // Function to show more routes when the 'Show More' button is clicked
+        function showMoreRoutes() {
+            const routesContainer = document.getElementById('routes-content');
+            const showMoreBtn = document.getElementById('show-more-btn');
+            
+            // Get all routes
+            const allRoutes = window.allPopularRoutes || [];
+            
+            // Calculate how many routes are currently displayed
+            const currentCount = document.querySelectorAll('.route-card').length;
+            
+            // Show 5 more routes
+            const nextRoutes = allRoutes.slice(currentCount, currentCount + 5);
+            
+            if (nextRoutes.length > 0) {
+                // Render the additional routes
+                let additionalRoutesHTML = '';
+                
+                nextRoutes.forEach(route => {
+                    additionalRoutesHTML += createRouteCardHTML(route);
+                });
+                
+                // Append to existing routes
+                routesContainer.innerHTML += additionalRoutesHTML;
+                
+                // Hide the 'Show More' button if all routes have been displayed
+                if (currentCount + nextRoutes.length >= allRoutes.length) {
+                    showMoreBtn.parentElement.style.display = 'none';
+                }
+            }
+        }
+        
+        // Fetch top routes from API with direct endpoint
+        async function fetchTopRoutes() {
+            // Try to use the raw-compare-data endpoint to get all routes data
+            try {
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Request timeout')), 5000);  // 5 second timeout
+                });
+                
+                // Make API call with a limit of 20 routes
+                const response = await Promise.race([
+                    fetch(`${CONFIG.API_BASE_URL}/api/raw-compare-data?limit=20`),
+                    timeoutPromise
+                ]);
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.success && data.data && data.data.routes) {
+                    // Extract routes from the API response format
+                    const routes = data.data.routes;
+                    
+                    // Calculate cost per km for each route if not already present
+                    routes.forEach(route => {
+                        if (!route.cost_per_km && route.distance && route.price) {
+                            route.cost_per_km = route.price / route.distance;
+                        }
                     });
                     
-                    routesContainer.innerHTML = routesHTML;
-                    routesContainer.style.display = 'block';
-                    loadingElement.style.display = 'none';
-                } else {
-                    routesContainer.innerHTML = '<div class="alert alert-warning">No popular routes found.</div>';
-                    routesContainer.style.display = 'block';
-                    loadingElement.style.display = 'none';
+                    // Sort routes by cost per km (lowest first)
+                    const sortedRoutes = routes.sort((a, b) => a.cost_per_km - b.cost_per_km);
+                    
+                    // Take top 10 routes and map to consistent format for display
+                    return sortedRoutes.slice(0, 10).map(route => ({
+                        origin: route.origin || "",
+                        destination: route.destination || "",
+                        distance: route.distance || 0,
+                        price: route.price || 0,
+                        cost_per_km: route.cost_per_km || 0,
+                        airline: route.airline || getRandomAirline()
+                    }));
                 }
-            })
-            .catch(error => {
-                console.error('Error loading popular routes:', error);
-                routesContainer.innerHTML = `<div class="alert alert-danger">Error loading popular routes: ${error.message}</div>`;
-                routesContainer.style.display = 'block';
-                loadingElement.style.display = 'none';
+                
+                // Fallback to sample data if API doesn't return expected format
+                return getSampleRoutes();
+            } catch (error) {
+                console.error('Error fetching top routes:', error);
+                // Return sample data as fallback
+                return getSampleRoutes();
+            }
+        }
+        
+        // Get sample routes as fallback
+        function getSampleRoutes() {
+            return [
+                { origin: 'BLR', destination: 'DEL', distance: 1740, price: 7200, cost_per_km: 4.14, airline: 'Air India' },
+                { origin: 'PNQ', destination: 'DEL', distance: 1173, price: 5100, cost_per_km: 4.35, airline: 'SpiceJet' },
+                { origin: 'CCU', destination: 'DEL', distance: 1305, price: 5800, cost_per_km: 4.44, airline: 'Vistara' },
+                { origin: 'MAA', destination: 'BOM', distance: 1032, price: 4900, cost_per_km: 4.75, airline: 'SpiceJet' },
+                { origin: 'DEL', destination: 'BOM', distance: 1148, price: 5500, cost_per_km: 4.79, airline: 'IndiGo' },
+                { origin: 'HYD', destination: 'BLR', distance: 497, price: 2800, cost_per_km: 5.63, airline: 'IndiGo' },
+                { origin: 'AMD', destination: 'BOM', distance: 442, price: 2500, cost_per_km: 5.66, airline: 'IndiGo' },
+                { origin: 'COK', destination: 'BLR', distance: 367, price: 2300, cost_per_km: 6.27, airline: 'Air India' },
+                { origin: 'JAI', destination: 'DEL', distance: 240, price: 1600, cost_per_km: 6.67, airline: 'IndiGo' },
+                { origin: 'BOM', destination: 'GOI', distance: 591, price: 4200, cost_per_km: 7.11, airline: 'SpiceJet' }
+            ];
+        }
+        
+        // Helper function to get a random airline name
+        function getRandomAirline() {
+            const airlines = ['IndiGo', 'Air India', 'SpiceJet', 'Vistara', 'GoAir', 'AirAsia India'];
+            return airlines[Math.floor(Math.random() * airlines.length)];
+        }
+        
+        // Render the popular routes with the provided data
+        function renderPopularRoutes(routes, container) {
+            // Create HTML for routes
+            let routesHTML = '';
+            
+            routes.forEach(route => {
+                routesHTML += createRouteCardHTML(route);
             });
+            
+            container.innerHTML = routesHTML;
+            container.style.display = 'block';
+        }
+        
+        // Helper function to create HTML for a single route card
+        function createRouteCardHTML(route) {
+            // Calculate a savings percentage based on average cost per km in India
+            const avgCostPerKm = 4.8; // Average cost per km for Indian domestic flights
+            const savingsPercent = Math.round((avgCostPerKm - route.cost_per_km) / avgCostPerKm * 100);
+            const savingsClass = savingsPercent > 0 ? 'savings-positive' : 'savings-negative';
+            
+            return `
+                <div class="route-card">
+                    <div class="route-card-header">
+                        <div class="route-airports">
+                            <span class="route-origin">${route.origin}</span>
+                            <span class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></span>
+                            <span class="route-destination">${route.destination}</span>
+                        </div>
+                        <div class="route-airline">
+                            <i class="fas fa-plane"></i> ${route.airline}
+                        </div>
+                    </div>
+                    <div class="route-card-body">
+                        <div class="route-details">
+                            <div class="route-distance">
+                                <i class="fas fa-route"></i> ${route.distance} km
+                            </div>
+                            <div class="route-cost-per-km">
+                                <i class="fas fa-tag"></i> ₹${route.cost_per_km.toFixed(2)}/km
+                            </div>
+                        </div>
+                        <div class="route-price">
+                            <div class="price-amount">₹${Math.round(route.price)}</div>
+                            <div class="price-savings ${savingsClass}">
+                                ${savingsPercent > 0 ? `${savingsPercent}% cheaper than average` : `${Math.abs(savingsPercent)}% more expensive than average`}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="route-card-footer">
+                        <a href="compare.html?origin=${route.origin}&destination=${route.destination}" class="route-compare-btn">
+                            Compare this route <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
         }
     </script>
 </body>

@@ -6,21 +6,26 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize the page
     initOptimizerPage();
+    
+    // Fetch popular airports from API
+    CONFIG.fetchPopularAirports();
 });
 
 /**
  * Initialize the optimizer page
  */
 function initOptimizerPage() {
-    // Populate airport selects
-    populateAirportSelect('origin');
-    populateAirportSelect('destination');
-    
     // Add event listeners
     document.getElementById('optimize-btn').addEventListener('click', optimizeRoute);
     
     // Setup tabs
     setupTabs();
+    
+    // Wait a bit for the airport data to load then populate selects
+    setTimeout(() => {
+        populateAirportSelect('origin');
+        populateAirportSelect('destination');
+    }, 500);
 }
 
 /**
@@ -47,6 +52,27 @@ function setupTabs() {
 }
 
 /**
+ * Populate airport select dropdown
+ * @param {string} selectId - ID of the select element to populate
+ */
+function populateAirportSelect(selectId) {
+    const select = document.getElementById(selectId);
+    
+    // Clear existing options except the first one
+    while (select.options.length > 1) {
+        select.remove(1);
+    }
+    
+    // Add options for each airport
+    CONFIG.POPULAR_AIRPORTS.forEach(airport => {
+        const option = document.createElement('option');
+        option.value = airport.code;
+        option.textContent = `${airport.city} (${airport.code}) - ${airport.name}`;
+        select.appendChild(option);
+    });
+}
+
+/**
  * Optimize route
  */
 async function optimizeRoute() {
@@ -68,7 +94,6 @@ async function optimizeRoute() {
     showLoading('origin-alternatives', 'Finding nearby airports...');
     showLoading('destination-alternatives', 'Finding nearby airports...');
     showLoading('layover-comparison', 'Analyzing layover options...');
-    showLoading('class-comparison', 'Comparing travel classes...');
     
     // Fetch nearby airports data
     try {
@@ -86,21 +111,18 @@ async function optimizeRoute() {
         showError('destination-alternatives', 'An error occurred while finding nearby airports.');
     }
     
-    // Fetch class and layover data
+    // Fetch layover data
     try {
-        const classLayoverResponse = await callAPI(`${CONFIG.ENDPOINTS.CLASS_LAYOVER}?origin=${origin}&destination=${destination}`);
+        const layoverResponse = await callAPI(`${CONFIG.ENDPOINTS.CLASS_LAYOVER}?origin=${origin}&destination=${destination}`);
         
-        if (classLayoverResponse.success) {
-            displayLayoverComparison(classLayoverResponse.data);
-            displayClassComparison(classLayoverResponse.data);
+        if (layoverResponse.success) {
+            displayLayoverComparison(layoverResponse.data);
         } else {
-            showError('layover-comparison', classLayoverResponse.error || 'Failed to analyze layover options.');
-            showError('class-comparison', classLayoverResponse.error || 'Failed to compare travel classes.');
+            showError('layover-comparison', layoverResponse.error || 'Failed to analyze layover options.');
         }
     } catch (error) {
-        console.error('Error fetching class and layover data:', error);
+        console.error('Error fetching layover data:', error);
         showError('layover-comparison', 'An error occurred while analyzing layover options.');
-        showError('class-comparison', 'An error occurred while comparing travel classes.');
     }
 }
 
@@ -136,30 +158,57 @@ function displayAirportAlternatives(element, airportData, type) {
         return;
     }
     
-    // Generate HTML for airport alternatives
+    // Filter only recommended alternatives (with negative cost difference)
+    // and sort by most savings first (most negative avg_cost_difference)
+    const recommendedAirports = airportData.nearby
+        .filter(airport => airport.avg_cost_difference < 0)
+        .sort((a, b) => a.avg_cost_difference - b.avg_cost_difference)
+        .slice(0, 5); // Show max 5 alternatives
+    
+    // Check if there are any recommended alternatives
+    if (recommendedAirports.length === 0) {
+        element.innerHTML = `
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> 
+                No recommended alternative airports found for ${airportData.name} (${airportData.code}).
+            </div>
+        `;
+        return;
+    }
+    
+    // Calculate total potential savings
+    const totalSavings = recommendedAirports.reduce((sum, airport) => {
+        return sum + Math.abs(airport.avg_cost_difference);
+    }, 0);
+    
+    // Generate HTML for airport alternatives with impressive savings highlight
     let html = `
         <div class="card mb-4">
-            <div class="card-header">
+            <div class="card-header bg-primary text-white">
                 <h4>${airportData.name} (${airportData.code})</h4>
                 <p>${airportData.city}, ${airportData.country}</p>
             </div>
-            <div class="card-body">
-                <p>Consider these nearby alternatives:</p>
+            <div class="card-body bg-light">
+                <div class="alert alert-success">
+                    <i class="fas fa-piggy-bank fa-2x float-start me-3"></i>
+                    <h5>Potential Savings Found!</h5>
+                    <p>We found ${recommendedAirports.length} nearby airports that could save you up to <strong>${(totalSavings * 100).toFixed(1)}%</strong> on your travel costs!</p>
+                </div>
+                <p>Consider these optimized alternatives:</p>
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead>
+                    <table class="table table-hover">
+                        <thead class="table-primary">
                             <tr>
                                 <th>Airport</th>
                                 <th>Distance</th>
-                                <th>Avg. Cost Difference</th>
+                                <th>Cost Savings</th>
                                 <th>Recommendation</th>
                             </tr>
                         </thead>
-                        <tbody>
-    `;
+                        <tbody>`;
     
-    // Add rows for each nearby airport
-    airportData.nearby.forEach(airport => {
+    // Add rows for each recommended nearby airport
+    recommendedAirports.forEach(airport => {
         // Determine recommendation based on cost difference
         let recommendation, recommendationClass;
         if (airport.avg_cost_difference < -0.1) {
@@ -168,18 +217,16 @@ function displayAirportAlternatives(element, airportData, type) {
         } else if (airport.avg_cost_difference < 0) {
             recommendation = 'Recommended';
             recommendationClass = 'text-success';
-        } else if (airport.avg_cost_difference < 0.05) {
+        } else {
+            // This shouldn't happen as we've filtered for negative values only
             recommendation = 'Consider';
             recommendationClass = 'text-warning';
-        } else {
-            recommendation = 'Not Recommended';
-            recommendationClass = 'text-danger';
         }
         
-        // Format cost difference as percentage
-        const costDiffPercent = (airport.avg_cost_difference * 100).toFixed(1);
-        const costDiffClass = airport.avg_cost_difference < 0 ? 'text-success' : 'text-danger';
-        const costDiffSign = airport.avg_cost_difference < 0 ? '-' : '+';
+        // Format cost difference as percentage (always showing as savings)
+        const costDiffPercent = Math.abs(airport.avg_cost_difference * 100).toFixed(1);
+        const costDiffClass = 'text-success';
+        const savingsIcon = '<i class="fas fa-tag"></i>';
         
         // Add row to table
         html += `
@@ -189,19 +236,22 @@ function displayAirportAlternatives(element, airportData, type) {
                     <small>${airport.city}, ${airport.country}</small>
                 </td>
                 <td>${airport.distance} km</td>
-                <td class="${costDiffClass}">${costDiffSign}${Math.abs(costDiffPercent)}%</td>
-                <td class="${recommendationClass}">${recommendation}</td>
-            </tr>
-        `;
+                <td class="${costDiffClass}">
+                    ${savingsIcon} <strong>${costDiffPercent}% savings</strong>
+                </td>
+                <td class="${recommendationClass}">
+                    <span class="badge bg-success">${recommendation}</span>
+                </td>
+            </tr>`;
     });
     
+    // Close the HTML structure
     html += `
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
-    `;
+        </div>`;
     
     // Update element
     element.innerHTML = html;
@@ -234,17 +284,17 @@ function displayLayoverComparison(data) {
     // Generate HTML for layover comparison
     let html = `
         <div class="card mb-4">
-            <div class="card-header">
-                <h4>Direct vs. Layover Flights</h4>
-                <p>Compare cost and time trade-offs</p>
+            <div class="card-header bg-primary text-white">
+                <h4><i class="fas fa-exchange-alt"></i> Direct vs. Layover Flights</h4>
+                <p>Compare cost and time trade-offs for maximum savings</p>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead>
+                    <table class="table table-hover">
+                        <thead class="table-primary">
                             <tr>
                                 <th>Route</th>
-                                <th>Economy Price</th>
+                                <th>Price</th>
                                 <th>Cost per km</th>
                                 <th>Duration</th>
                                 <th>Time Difference</th>
@@ -256,14 +306,14 @@ function displayLayoverComparison(data) {
     
     // Add row for direct flight
     html += `
-        <tr>
+        <tr class="table-light">
             <td>
-                <strong>Direct Flight</strong><br>
+                <strong><i class="fas fa-plane"></i> Direct Flight</strong><br>
                 <small>${data.origin} to ${data.destination}</small>
             </td>
-            <td>${formatCurrency(data.direct_flight.economy.price)}</td>
-            <td>${formatCurrency(data.direct_flight.economy.cost_per_km)}/km</td>
-            <td>${data.direct_flight.economy.duration_hours} hours</td>
+            <td><strong>${formatCurrency(data.direct_flight.price)}</strong></td>
+            <td>${formatCurrency(data.direct_flight.cost_per_km)}/km</td>
+            <td><i class="fas fa-clock"></i> ${data.direct_flight.duration_hours} hours</td>
             <td>-</td>
             <td>-</td>
         </tr>
@@ -272,24 +322,37 @@ function displayLayoverComparison(data) {
     // Add rows for layover options
     data.layover_options.forEach(option => {
         // Calculate savings
-        const savings = data.direct_flight.economy.price - option.economy.price;
-        const savingsPercent = (savings / data.direct_flight.economy.price * 100).toFixed(1);
+        const savings = data.direct_flight.price - option.price;
+        const savingsPercent = (savings / data.direct_flight.price * 100).toFixed(1);
         
         // Calculate time difference
-        const timeDiff = option.economy.duration_hours - data.direct_flight.economy.duration_hours;
+        const timeDiff = option.duration_hours - data.direct_flight.duration_hours;
+        
+        // Determine if this is a good deal based on savings vs time trade-off
+        const savingsPerHour = savings / timeDiff;
+        let dealClass = 'table-success';
+        let dealIcon = '<i class="fas fa-thumbs-up text-success"></i>';
+        
+        if (savingsPerHour < 20) {
+            dealClass = ''; // neutral
+            dealIcon = '<i class="fas fa-balance-scale text-warning"></i>';
+        }
         
         // Add row to table
         html += `
-            <tr>
+            <tr class="${dealClass}">
                 <td>
-                    <strong>Via ${option.via}</strong><br>
-                    <small>${data.origin} to ${option.via} to ${data.destination}</small>
+                    <strong><i class="fas fa-exchange-alt"></i> Via ${option.via}</strong><br>
+                    <small>${data.origin} → ${option.via} → ${data.destination}</small>
                 </td>
-                <td>${formatCurrency(option.economy.price)}</td>
-                <td>${formatCurrency(option.economy.cost_per_km)}/km</td>
-                <td>${option.economy.duration_hours} hours</td>
-                <td>+${timeDiff.toFixed(1)} hours</td>
-                <td class="text-success">${formatCurrency(savings)} (${savingsPercent}%)</td>
+                <td><strong>${formatCurrency(option.price)}</strong></td>
+                <td>${formatCurrency(option.cost_per_km)}/km</td>
+                <td><i class="fas fa-clock"></i> ${option.duration_hours} hours</td>
+                <td class="text-warning">+${timeDiff.toFixed(1)} hours</td>
+                <td class="text-success">
+                    <strong>${dealIcon} ${formatCurrency(savings)}</strong><br>
+                    <span class="badge bg-success">${savingsPercent}% OFF</span>
+                </td>
             </tr>
         `;
     });
@@ -318,9 +381,9 @@ function createLayoverChart(data) {
     
     // Prepare data for chart
     const labels = ['Direct Flight', ...data.layover_options.map(option => `Via ${option.via}`)];
-    const priceData = [data.direct_flight.economy.price, ...data.layover_options.map(option => option.economy.price)];
-    const timeData = [data.direct_flight.economy.duration_hours, ...data.layover_options.map(option => option.economy.duration_hours)];
-    const costPerKmData = [data.direct_flight.economy.cost_per_km, ...data.layover_options.map(option => option.economy.cost_per_km)];
+    const priceData = [data.direct_flight.price, ...data.layover_options.map(option => option.price)];
+    const timeData = [data.direct_flight.duration_hours, ...data.layover_options.map(option => option.duration_hours)];
+    const costPerKmData = [data.direct_flight.cost_per_km, ...data.layover_options.map(option => option.cost_per_km)];
     
     // Destroy existing chart if it exists
     if (window.layoverChart) {
@@ -386,180 +449,6 @@ function createLayoverChart(data) {
                             return `Cost per km: ${formatCurrency(costPerKmData[index])}/km`;
                         }
                     }
-                }
-            }
-        }
-    });
-}
-
-/**
- * Display class comparison
- * @param {Object} data - Class and layover data
- */
-function displayClassComparison(data) {
-    const element = document.getElementById('class-comparison');
-    
-    // Generate HTML for class comparison
-    let html = `
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>Travel Class Comparison</h4>
-                <p>Compare cost per kilometer across different travel classes</p>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Travel Class</th>
-                                <th>Price</th>
-                                <th>Cost per km</th>
-                                <th>Price Increase</th>
-                                <th>Space Increase</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-    `;
-    
-    // Define travel classes
-    const classes = [
-        { key: 'economy', name: 'Economy', spaceIncrease: 1 },
-        { key: 'premium_economy', name: 'Premium Economy', spaceIncrease: 1.2 },
-        { key: 'business', name: 'Business', spaceIncrease: 2 },
-        { key: 'first', name: 'First', spaceIncrease: 3 }
-    ];
-    
-    // Add rows for each travel class
-    classes.forEach((travelClass, index) => {
-        // Skip if class doesn't exist in data
-        if (!data.direct_flight[travelClass.key]) return;
-        
-        // Get class data
-        const classData = data.direct_flight[travelClass.key];
-        
-        // Calculate price increase (compared to economy)
-        const economyPrice = data.direct_flight.economy.price;
-        const priceIncrease = ((classData.price / economyPrice) - 1) * 100;
-        
-        // Calculate value rating (1-5 stars)
-        // Based on the ratio of space increase to price increase
-        let valueRating = 5;
-        if (index > 0) {
-            const spaceToPrice = travelClass.spaceIncrease / (classData.price / economyPrice);
-            valueRating = Math.round(spaceToPrice * 5);
-            valueRating = Math.min(Math.max(valueRating, 1), 5);
-        }
-        
-        // Generate stars for value rating
-        const stars = '<i class="fas fa-star text-warning"></i>'.repeat(valueRating) + 
-                      '<i class="far fa-star text-warning"></i>'.repeat(5 - valueRating);
-        
-        // Add row to table
-        html += `
-            <tr>
-                <td><strong>${travelClass.name}</strong></td>
-                <td>${formatCurrency(classData.price)}</td>
-                <td>${formatCurrency(classData.cost_per_km)}/km</td>
-                <td>${index === 0 ? '-' : `+${priceIncrease.toFixed(0)}%`}</td>
-                <td>${index === 0 ? '-' : `+${((travelClass.spaceIncrease - 1) * 100).toFixed(0)}%`}</td>
-            </tr>
-        `;
-    });
-    
-    html += `
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    // Update element
-    element.innerHTML = html;
-    
-    // Create class chart
-    createClassChart(data);
-}
-
-/**
- * Create class chart
- * @param {Object} data - Class and layover data
- */
-function createClassChart(data) {
-    const ctx = document.getElementById('class-chart').getContext('2d');
-    
-    // Define travel classes
-    const classes = [
-        { key: 'economy', name: 'Economy' },
-        { key: 'premium_economy', name: 'Premium Economy' },
-        { key: 'business', name: 'Business' },
-        { key: 'first', name: 'First' }
-    ];
-    
-    // Filter classes that exist in data
-    const availableClasses = classes.filter(c => data.direct_flight[c.key]);
-    
-    // Prepare data for chart
-    const labels = availableClasses.map(c => c.name);
-    const priceData = availableClasses.map(c => data.direct_flight[c.key].price);
-    const costPerKmData = availableClasses.map(c => data.direct_flight[c.key].cost_per_km);
-    
-    // Destroy existing chart if it exists
-    if (window.classChart) {
-        window.classChart.destroy();
-    }
-    
-    // Create new chart
-    window.classChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Price ($)',
-                    data: priceData,
-                    backgroundColor: CONFIG.CHART_COLORS.colors.slice(0, availableClasses.length),
-                    borderColor: CONFIG.CHART_COLORS.colors.slice(0, availableClasses.length),
-                    borderWidth: 1,
-                    yAxisID: 'y'
-                },
-                {
-                    label: 'Cost per km ($)',
-                    data: costPerKmData,
-                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                    borderColor: '#000',
-                    borderWidth: 2,
-                    type: 'line',
-                    yAxisID: 'y1'
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Price ($)'
-                    }
-                },
-                y1: {
-                    beginAtZero: true,
-                    position: 'right',
-                    grid: {
-                        drawOnChartArea: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Cost per km ($)'
-                    }
-                }
-            },
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Travel Class Comparison'
                 }
             }
         }

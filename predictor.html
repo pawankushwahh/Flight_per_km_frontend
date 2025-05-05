@@ -20,6 +20,7 @@
             <nav class="nav">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="compare.html" class="nav-link">Compare</a>
+                <a href="route-finder.html" class="nav-link">Route Finder</a>
                 <a href="predictor.html" class="nav-link active">Predictor</a>
                 <a href="optimizer.html" class="nav-link">Optimizer</a>
                 <a href="heatmap.html" class="nav-link">Heatmap</a>
@@ -171,7 +172,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Populate airport dropdowns
-            populateAirportDropdowns();
+            const originSelect = document.getElementById('origin');
+            const destinationSelect = document.getElementById('destination');
+            populateAirportDropdowns(originSelect, destinationSelect);
             
             // Handle predict button click
             document.getElementById('predict-btn').addEventListener('click', function() {
@@ -180,6 +183,8 @@
                 
                 if (origin && destination) {
                     predictPrices(origin, destination);
+                } else {
+                    alert('Please select both origin and destination airports');
                 }
             });
             
@@ -193,13 +198,6 @@
                     this.classList.add('active');
                 });
             });
-        });
-        
-        // Initialize airport dropdowns when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            const originSelect = document.getElementById('origin');
-            const destinationSelect = document.getElementById('destination');
-            populateAirportDropdowns(originSelect, destinationSelect);
         });
         
         // Function to predict prices
