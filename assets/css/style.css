@@ -1,7 +1,7 @@
 /* Global Styles */
 :root {
-  --primary-color: #4361ee;
-  --primary-light: #4895ef;
+  --primary-color: #cd9f3c;
+  --primary-light: #cd9f3c;
   --secondary-color: #2b2d42;
   --accent-color: #f72585;
   --accent-light: #ff758f;
@@ -10,7 +10,7 @@
   --success-color: #06d6a0;
   --warning-color: #ffd166;
   --danger-color: #ef476f;
-  --info-color: #118ab2;
+  --info-color: #ac6921;
   --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   --box-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.2);
   --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -89,7 +89,7 @@ a:hover {
 
 .header.scrolled {
   padding: 0.7rem 0;
-  background-color: rgba(43, 45, 66, 0.95);
+  background-color: rgba(66, 43, 43, 0.95);
   backdrop-filter: blur(10px);
 }
 

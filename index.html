@@ -23,8 +23,8 @@
                 <a href="index.html" class="nav-link active">Home</a>
                 <a href="compare.html" class="nav-link">Compare</a>
                 <a href="route-finder.html" class="nav-link">Route Finder</a>
-                <a href="predictor.html" class="nav-link">Predictor</a>
-                <a href="optimizer.html" class="nav-link">Optimizer</a>
+                <a href="predictor.html" class="nav-link" style="display: none;">Predictor</a>
+                <a href="optimizer.html" class="nav-link" style="display: none;">Optimizer</a>
                 <a href="heatmap.html" class="nav-link">Heatmap</a>
                 <a href="faq.html" class="nav-link">FAQ</a>
             </nav>
@@ -40,42 +40,31 @@
                 
                 <!-- Skyscanner-style search box -->
                 <div class="search-box animate-fadeIn">
-                    <h3 class="text-center mb-4">Flight Cost Intelligence Tools</h3>
-                    
-                    <div class="feature-buttons-container">
-                        <div class="row mb-4">
-                            <div class="col-md-6 mb-3">
-                                <a href="compare.html" class="feature-button btn-primary">
-                                    <i class="fas fa-plane-departure fa-2x mb-2"></i>
-                                    <h4>Compare Routes</h4>
-                                    <p>Compare flight costs per kilometer across different routes</p>
-                                </a>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <a href="predictor.html" class="feature-button btn-success">
-                                    <i class="fas fa-chart-line fa-2x mb-2"></i>
-                                    <h4>Price Trends</h4>
-                                    <p>Analyze price trends and get the best time to book</p>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <a href="route-finder.html" class="feature-button btn-info">
-                                    <i class="fas fa-globe fa-2x mb-2"></i>
-                                    <h4>Route Finder</h4>
-                                    <p>Find best value destinations with lowest cost per kilometer</p>
-                                </a>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <a href="optimizer.html" class="feature-button btn-warning">
-                                    <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
-                                    <h4>Optimize Routes</h4>
-                                    <p>Discover nearby airport alternatives and save on flights</p>
-                                </a>
-                            </div>
-                        </div>
+                    <div class="search-tabs">
+                        <div class="search-tab active">Compare Routes</div>
+                        <div class="search-tab">Price Trends</div>
+                        <div class="search-tab">Optimize Routes</div>
                     </div>
+                    
+                    <form id="search-form" class="search-form">
+                        <div class="search-input-group">
+                            <label class="search-input-label">From</label>
+                            <select id="origin" class="search-input" required>
+                                <option value="bhopal">Select origin</option>
+                            </select>
+                        </div>
+                        
+                        <div class="search-input-group">
+                            <label class="search-input-label">To</label>
+                            <select id="destination" class="search-input" required>
+                                <option value="">Select destination</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="search-button">
+                            <i class="fas fa-search"></i> Compare
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -112,7 +101,7 @@
                             </div>
                             <h3>Dynamic Pricing Analyzer</h3>
                             <p>Analyze historical trends to find the best time to traver at the lowest cost per km.</p>
-                            <a href="predictor.html" class="feature-btn">Predict Prices <i class="fas fa-arrow-right"></i></a>
+                            <a href="predictor.html" class="feature-btn" style="display: none;">Predict Prices <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -125,7 +114,7 @@
                             </div>
                             <h3>Geo-based Route Optimizer</h3>
                             <p>Discover nearby alternative airports that could save you money on your journey.</p>
-                            <a href="optimizer.html" class="feature-btn">Optimize Route <i class="fas fa-arrow-right"></i></a>
+                            <a href="optimizer.html" class="feature-btn" style="display: none;">Optimize Route <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -141,7 +130,7 @@
                             </div>
                             <h3>Layover Value Analyzer</h3>
                             <p>Compare direct flights with layover options to see if the savings are worth the extra time.</p>
-                            <a href="optimizer.html#layover" class="feature-btn">Analyze Layovers <i class="fas fa-arrow-right"></i></a>
+                            <a href="optimizer.html#layover" class="feature-btn" style="display: none;">Analyze Layovers <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -154,7 +143,7 @@
                             </div>
                             <h3>Class Efficiency Explorer</h3>
                             <p>Determine if upgrading to a higher class is worth the additional cost per kilometer.</p>
-                            <a href="optimizer.html#class" class="feature-btn">Explore Classes <i class="fas fa-arrow-right"></i></a>
+                            <a href="optimizer.html#class" class="feature-btn" style="display: none;">Explore Classes <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>

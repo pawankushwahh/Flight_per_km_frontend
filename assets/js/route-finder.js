@@ -78,8 +78,8 @@ async function findBestRoutes() {
     `;
     
     try {
-        // Fetch best routes data - we'll use the compare data endpoint with a special query param
-        const response = await callAPI(`${CONFIG.ENDPOINTS.DUMMY_COMPARE}`, {
+        // Fetch best routes data from the route finder endpoint
+        const response = await callAPI(`${CONFIG.ENDPOINTS.ROUTE_FIND}`, {
             origin: origin,
             findBestRoutes: true
         });

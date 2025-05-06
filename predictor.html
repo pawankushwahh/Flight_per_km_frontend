@@ -3,12 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Price Predictor | Flight Cost Intelligence System</title>
+    <title>Flight Price Trends | Flight Cost Intelligence System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/skyscanner-style.css">
-    <link rel="stylesheet" href="assets/css/dropdown.css">
     <link rel="icon" href="https://img.icons8.com/fluency/48/airplane-mode-on.png" type="image/png">
+    <!-- Added Chart.js for better visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .routes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .route-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .route-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .route-card.selected {
+            border: 2px solid #0770e3;
+            background-color: #f0f7ff;
+        }
+        .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .route-title {
+            font-weight: 500;
+            font-size: 16px;
+            color: #042759;
+        }
+        .route-details {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        .detail-label {
+            color: #666;
+            font-size: 13px;
+        }
+        .detail-value {
+            font-weight: 500;
+            color: #333;
+        }
+        .price-highlight {
+            color: #00a698;
+            font-weight: bold;
+        }
+        .route-select {
+            cursor: pointer;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: #0770e3;
+            font-size: 20px;
+        }
+        .routes-filter {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 200px;
+            flex-grow: 1;
+        }
+        #selected-routes {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        .selected-route-chip {
+            display: inline-flex;
+            align-items: center;
+            background: #e6f2ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 16px;
+            padding: 5px 10px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .remove-route {
+            margin-left: 5px;
+            cursor: pointer;
+            color: #666;
+        }
+        .chart-container {
+            margin-top: 30px;
+            height: 400px;
+            position: relative;
+        }
+        .chart-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .chart-tab {
+            padding: 8px 15px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .chart-tab.active {
+            background: #0770e3;
+            color: white;
+        }
+        .trend-summary {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .trend-summary h3 {
+            margin-top: 0;
+            color: #042759;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .summary-item {
+            background: #f9f9f9;
+            border-radius: 6px;
+            padding: 10px;
+        }
+        .summary-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .summary-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #042759;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
+        }
+        .loading i {
+            margin-right: 10px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -21,10 +192,9 @@
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="compare.html" class="nav-link">Compare</a>
                 <a href="route-finder.html" class="nav-link">Route Finder</a>
-                <a href="predictor.html" class="nav-link active">Predictor</a>
-                <a href="optimizer.html" class="nav-link">Optimizer</a>
+                <a href="predictor.html" class="nav-link active">Trend Analysis</a>
+                <a href="visualizations.html" class="nav-link">Visualizations</a>
                 <a href="heatmap.html" class="nav-link">Heatmap</a>
-                <a href="faq.html" class="nav-link">FAQ</a>
             </nav>
         </div>
     </header>
@@ -33,25 +203,668 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1>Dynamic Pricing Predictor</h1>
-                <p>Analyze historical trends to find the best time to book your flights at the lowest cost per km</p>
+                <h1>Flight Price Trend Analysis</h1>
+                <p>Compare flight price trends throughout the year for popular routes and find the best time to book</p>
             </div>
         </div>
     </section>
 
-    <!-- Predictor Section -->
-    <section class="predictor-section">
+    <!-- Main Content -->
+    <section class="main-section">
         <div class="container">
-            <!-- Search Box (Skyscanner style) -->
-            <div class="search-box">
-                <div class="search-tabs">
-                    <div class="search-tab active has-dropdown">Price Prediction
-                        <ul class="dropdown-content">
-                            <li><i class="fas fa-calendar-alt"></i> Monthly Price Forecast</li>
-                            <li><i class="fas fa-clock"></i> Booking Time Recommendations</li>
-                            <li><i class="fas fa-percentage"></i> Price Fluctuation Analysis</li>
-                            <li><i class="fas fa-dollar-sign"></i> Lowest Price Alerts</li>
-                            <li><i class="fas fa-tags"></i> Best Value Months</li>
+            <!-- Introduction -->
+            <div class="intro-section">
+                <h2><i class="fas fa-chart-line text-primary"></i> Route Price Trends</h2>
+                <p>Select up to 5 routes below to compare their price trends throughout the year. Analyze monthly and booking time patterns to find the best deals.</p>
+            </div>
+
+            <!-- Route Selection Area -->
+            <div id="route-selection-area">
+                <div class="routes-filter">
+                    <input type="text" id="route-filter" class="filter-input" placeholder="Search routes by airport code or city name...">
+                    <button id="reset-filter" class="btn btn-secondary"><i class="fas fa-times"></i> Clear</button>
+                </div>
+                
+                <div id="selected-routes">
+                    <h3>Selected Routes (Max 5)</h3>
+                    <div id="selected-route-chips"></div>
+                </div>
+                
+                <div id="routes-container" class="routes-container">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i> Loading available routes...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Area -->
+            <div id="trend-charts-area" style="display: none;">
+                <h2>Price Trend Analysis</h2>
+                
+                <div class="chart-tabs">
+                    <div class="chart-tab active" data-chart="monthly">Monthly Prices</div>
+                    <div class="chart-tab" data-chart="booking">Booking Time Impact</div>
+                </div>
+                
+                <div id="chart-container" class="chart-container">
+                    <canvas id="monthly-chart" style="display: block;"></canvas>
+                    <canvas id="booking-chart" style="display: none;"></canvas>
+                </div>
+                
+                <div id="trend-summary" class="trend-summary">
+                    <h3>Key Insights</h3>
+                    <div class="summary-grid" id="summary-grid">
+                        <!-- Summary items will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Flight Cost Intelligence</h3>
+                    <p>Analyze, compare, and predict flight costs to get the best value for your travel budget.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="compare.html">Compare Routes</a></li>
+                        <li><a href="predictor.html">Trend Analysis</a></li>
+                        <li><a href="visualizations.html">Visualizations</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Tools</h3>
+                    <ul>
+                        <li><a href="route-finder.html">Route Finder</a></li>
+                        <li><a href="heatmap.html">Cost Heatmap</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Flight Cost Intelligence System | Data for educational purposes</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App Configuration -->
+    <script src="assets/js/config.js"></script>
+    
+    <!-- App Scripts -->
+    <script>
+        // Global variables
+        let allRoutes = [];
+        let selectedRoutes = [];
+        let monthlyChart = null;
+        let bookingChart = null;
+        let activeChartType = 'monthly';
+        const colorPalette = [
+            '#0770e3',  // Primary blue
+            '#00a698',  // Teal
+            '#ff9e1b',  // Orange
+            '#d1435b',  // Red
+            '#7a6ff0'   // Purple
+        ];
+        
+        // Initialize the page when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load available routes from the API
+            loadAvailableRoutes();
+            
+            // Set up event listeners
+            document.getElementById('route-filter').addEventListener('input', filterRoutes);
+            document.getElementById('reset-filter').addEventListener('click', resetFilter);
+            
+            // Set up chart tab handlers
+            document.querySelectorAll('.chart-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Update active tab
+                    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update chart display
+                    activeChartType = this.getAttribute('data-chart');
+                    updateChartDisplay();
+                });
+            });
+        });
+        
+        // Load all available routes from the API
+        async function loadAvailableRoutes() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/api/trend-routes`);
+                const data = await response.json();
+                
+                if (data.success && Array.isArray(data.data)) {
+                    allRoutes = data.data;
+                    displayRoutes(allRoutes);
+                } else {
+                    throw new Error('Failed to load routes data');
+                }
+            } catch (error) {
+                console.error('Error loading routes:', error);
+                document.getElementById('routes-container').innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Failed to load routes data. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Display routes in the routes container
+        function displayRoutes(routes) {
+            const container = document.getElementById('routes-container');
+            
+            if (routes.length === 0) {
+                container.innerHTML = '<p>No routes found matching your search.</p>';
+                return;
+            }
+            
+            let html = '';
+            routes.forEach(route => {
+                const isSelected = selectedRoutes.some(r => r.origin === route.origin && r.destination === route.destination);
+                
+                html += `
+                    <div class="route-card ${isSelected ? 'selected' : ''}" data-origin="${route.origin}" data-destination="${route.destination}">
+                        <div class="route-header">
+                            <div class="route-title">${route.route_full_name}</div>
+                        </div>
+                        <div class="route-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Average Price:</span>
+                                <span class="detail-value">₹${formatNumber(route.avg_price)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Price Range:</span>
+                                <span class="detail-value">₹${formatNumber(route.min_price)} - ₹${formatNumber(route.max_price)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Best Month:</span>
+                                <span class="detail-value price-highlight">${route.best_month}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Variability:</span>
+                                <span class="detail-value">${route.price_variability}%</span>
+                            </div>
+                        </div>
+                        <div class="route-select" title="${isSelected ? 'Remove from comparison' : 'Add to comparison'}">
+                            <i class="fas ${isSelected ? 'fa-check-circle' : 'fa-plus-circle'}"></i>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Add event listeners to route cards
+            document.querySelectorAll('.route-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const origin = this.getAttribute('data-origin');
+                    const destination = this.getAttribute('data-destination');
+                    
+                    toggleRouteSelection(origin, destination);
+                });
+            });
+        }
+        
+        // Toggle route selection
+        function toggleRouteSelection(origin, destination) {
+            const existingIndex = selectedRoutes.findIndex(r => r.origin === origin && r.destination === destination);
+            
+            if (existingIndex !== -1) {
+                // Remove if already selected
+                selectedRoutes.splice(existingIndex, 1);
+            } else {
+                // Add if not already at max
+                if (selectedRoutes.length >= 5) {
+                    alert('You can select a maximum of 5 routes for comparison.');
+                    return;
+                }
+                
+                // Find the route details from allRoutes
+                const routeDetails = allRoutes.find(r => r.origin === origin && r.destination === destination);
+                if (routeDetails) {
+                    selectedRoutes.push(routeDetails);
+                }
+            }
+            
+            // Update UI
+            updateSelectedRoutesDisplay();
+            displayRoutes(filterRoutesArray(document.getElementById('route-filter').value));
+            
+            // If routes are selected, load trend data and show charts
+            if (selectedRoutes.length > 0) {
+                loadTrendData();
+            } else {
+                document.getElementById('trend-charts-area').style.display = 'none';
+            }
+        }
+        
+        // Update the display of selected routes
+        function updateSelectedRoutesDisplay() {
+            const container = document.getElementById('selected-route-chips');
+            
+            if (selectedRoutes.length === 0) {
+                container.innerHTML = '<p>No routes selected. Select up to 5 routes to compare.</p>';
+                return;
+            }
+            
+            let html = '';
+            selectedRoutes.forEach(route => {
+                html += `
+                    <div class="selected-route-chip" data-origin="${route.origin}" data-destination="${route.destination}">
+                        ${route.route_name}
+                        <span class="remove-route" title="Remove from comparison">×</span>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-route').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const chip = this.parentElement;
+                    const origin = chip.getAttribute('data-origin');
+                    const destination = chip.getAttribute('data-destination');
+                    toggleRouteSelection(origin, destination);
+                });
+            });
+        }
+        
+        // Filter routes based on search input
+        function filterRoutes() {
+            const searchText = document.getElementById('route-filter').value.toLowerCase();
+            const filteredRoutes = filterRoutesArray(searchText);
+            displayRoutes(filteredRoutes);
+        }
+        
+        // Helper function to filter routes array
+        function filterRoutesArray(searchText) {
+            if (!searchText) return allRoutes;
+            
+            return allRoutes.filter(route => {
+                return route.route_full_name.toLowerCase().includes(searchText.toLowerCase()) || 
+                       route.origin.toLowerCase().includes(searchText.toLowerCase()) || 
+                       route.destination.toLowerCase().includes(searchText.toLowerCase());
+            });
+        }
+        
+        // Reset the filter
+        function resetFilter() {
+            document.getElementById('route-filter').value = '';
+            displayRoutes(allRoutes);
+        }
+        
+        // Load trend data for selected routes
+        async function loadTrendData() {
+            if (selectedRoutes.length === 0) return;
+            
+            try {
+                // Prepare request data
+                const requestData = {
+                    routes: selectedRoutes.map(route => ({
+                        origin: route.origin,
+                        destination: route.destination
+                    }))
+                };
+                
+                // Show loading indicator
+                document.getElementById('chart-container').innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i> Loading trend data...
+                    </div>
+                `;
+                
+                // Make API request
+                const response = await fetch(`${CONFIG.API_BASE_URL}/api/compare-trends`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && Array.isArray(data.data)) {
+                    // Show chart area
+                    document.getElementById('trend-charts-area').style.display = 'block';
+                    
+                    // Reset chart container
+                    document.getElementById('chart-container').innerHTML = `<canvas id="price-trend-chart"></canvas>`;
+                    
+                    // Process and display the data
+                    createCharts(data.data);
+                    createSummary(data.data);
+                } else {
+                    throw new Error('Failed to load trend data');
+                }
+            } catch (error) {
+                console.error('Error loading trend data:', error);
+                document.getElementById('chart-container').innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Failed to load trend data. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Create charts for the trend data
+        function createCharts(trendsData) {
+            // Prepare data for monthly chart
+            const monthlyDatasets = [];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            trendsData.forEach((route, index) => {
+                // Create a dataset for each route
+                const color = colorPalette[index % colorPalette.length];
+                
+                // Monthly price data
+                if (route.monthly_trends && route.monthly_trends.length > 0) {
+                    // Get data for each month (ensure month order)
+                    const monthlyData = [];
+                    months.forEach(month => {
+                        const monthData = route.monthly_trends.find(m => m.month === month);
+                        monthlyData.push(monthData ? monthData.avg_price : null);
+                    });
+                    
+                    monthlyDatasets.push({
+                        label: `${route.origin} to ${route.destination}`,
+                        data: monthlyData,
+                        borderColor: color,
+                        backgroundColor: color + '20',  // Add transparency
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    });
+                }
+            });
+            
+            // Prepare data for booking time chart
+            const bookingDatasets = [];
+            const bookingTimeLabels = [];
+            
+            // Collect all possible booking time periods
+            trendsData.forEach(route => {
+                if (route.weekly_trends && route.weekly_trends.length > 0) {
+                    route.weekly_trends.forEach(week => {
+                        if (!bookingTimeLabels.includes(week.week)) {
+                            bookingTimeLabels.push(week.week);
+                        }
+                    });
+                }
+            });
+            
+            // Sort booking time labels
+            const standardOrder = [
+                '1-7 days before', '8-14 days before', '15-21 days before', 
+                '22-30 days before', '31-60 days before', '61-90 days before'
+            ];
+            
+            bookingTimeLabels.sort((a, b) => {
+                return standardOrder.indexOf(a) - standardOrder.indexOf(b);
+            });
+            
+            // Create datasets for booking time chart
+            trendsData.forEach((route, index) => {
+                const color = colorPalette[index % colorPalette.length];
+                
+                if (route.weekly_trends && route.weekly_trends.length > 0) {
+                    const bookingData = [];
+                    bookingTimeLabels.forEach(label => {
+                        const weekData = route.weekly_trends.find(w => w.week === label);
+                        bookingData.push(weekData ? weekData.avg_price : null);
+                    });
+                    
+                    bookingDatasets.push({
+                        label: `${route.origin} to ${route.destination}`,
+                        data: bookingData,
+                        borderColor: color,
+                        backgroundColor: color + '20',  // Add transparency
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: false,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    });
+                }
+            });
+            
+            // Clear any existing charts
+            if (monthlyChart) {
+                monthlyChart.destroy();
+            }
+            if (bookingChart) {
+                bookingChart.destroy();
+            }
+            
+            // Create monthly chart
+            const monthlyCtx = document.getElementById('monthly-chart').getContext('2d');
+            monthlyChart = new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: monthlyDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Price Trends',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ₹${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Price (₹)'
+                            },
+                            beginAtZero: false
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Create booking time chart
+            const bookingCtx = document.getElementById('booking-chart').getContext('2d');
+            bookingChart = new Chart(bookingCtx, {
+                type: 'line',
+                data: {
+                    labels: bookingTimeLabels,
+                    datasets: bookingDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Price by Booking Time',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ₹${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Price (₹)'
+                            },
+                            beginAtZero: false
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Booking Time'
+                            },
+                            reverse: true  // Show most recent booking times first
+                        }
+                    }
+                }
+            });
+            
+            // Show appropriate chart based on active tab
+            updateChartDisplay();
+        }
+        
+        // Update chart display based on active tab
+        function updateChartDisplay() {
+            if (!monthlyChart || !bookingChart) return;
+            
+            if (activeChartType === 'monthly') {
+                monthlyChart.show();
+                bookingChart.hide();
+            } else {
+                monthlyChart.hide();
+                bookingChart.show();
+            }
+        }
+        
+        // Create summary of trend data
+        function createSummary(trendsData) {
+            const summaryGrid = document.getElementById('summary-grid');
+            let html = '';
+            
+            // Overall insights
+            if (trendsData.length > 0) {
+                // Find all months in dataset
+                const allMonths = [];
+                trendsData.forEach(route => {
+                    if (route.monthly_trends) {
+                        route.monthly_trends.forEach(month => {
+                            if (!allMonths.some(m => m.month === month.month)) {
+                                allMonths.push(month);
+                            }
+                        });
+                    }
+                });
+                
+                // Find cheapest month across all routes
+                if (allMonths.length > 0) {
+                    const cheapestMonth = allMonths.reduce((cheapest, month) => {
+                        return month.avg_price < cheapest.avg_price ? month : cheapest;
+                    }, allMonths[0]);
+                    
+                    html += `
+                        <div class="summary-item">
+                            <div class="summary-label">Best Month Overall</div>
+                            <div class="summary-value">${cheapestMonth.month}</div>
+                        </div>
+                    `;
+                }
+                
+                // Find best booking time overall
+                const allBookingTimes = [];
+                trendsData.forEach(route => {
+                    if (route.weekly_trends) {
+                        route.weekly_trends.forEach(week => {
+                            if (!allBookingTimes.some(w => w.week === week.week)) {
+                                allBookingTimes.push(week);
+                            }
+                        });
+                    }
+                });
+                
+                if (allBookingTimes.length > 0) {
+                    const bestBookingTime = allBookingTimes.reduce((best, time) => {
+                        return time.avg_price < best.avg_price ? time : best;
+                    }, allBookingTimes[0]);
+                    
+                    html += `
+                        <div class="summary-item">
+                            <div class="summary-label">Best Booking Time</div>
+                            <div class="summary-value">${bestBookingTime.week}</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Route-specific insights
+            trendsData.forEach((route, index) => {
+                const color = colorPalette[index % colorPalette.length];
+                
+                // Find cheapest month for this route
+                if (route.monthly_trends && route.monthly_trends.length > 0) {
+                    const cheapestMonth = route.monthly_trends.reduce((cheapest, month) => {
+                        return month.avg_price < cheapest.avg_price ? month : cheapest;
+                    }, route.monthly_trends[0]);
+                    
+                    html += `
+                        <div class="summary-item" style="border-left: 3px solid ${color}">
+                            <div class="summary-label">${route.origin} to ${route.destination}</div>
+                            <div class="summary-value">Best: ${cheapestMonth.month}, ₹${formatNumber(cheapestMonth.avg_price)}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            summaryGrid.innerHTML = html;
+        }
+        
+        // Helper function to format numbers
+        function formatNumber(num) {
+            return parseFloat(num).toLocaleString('en-IN');
+        }
+    </script>
+</body>
+</html>
                         </ul>
                     </div>
                     <div class="search-tab has-dropdown">Historical Analysis
